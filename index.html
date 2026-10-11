@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Desafío Bíblico - 40 Niveles | Shock 99.5 FM & Theos Logos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #050208;
+            color: #f3f4f6;
+            overflow-x: hidden;
+            user-select: none;
+            min-height: 100vh;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        #sinai-canvas, #ambient-lightning-canvas, #strike-lightning-canvas, #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none !important;
+        }
+
+        #sinai-canvas { z-index: 0; }
+        #ambient-lightning-canvas { z-index: 1; }
+        #particle-canvas { z-index: 35; }
+        #strike-lightning-canvas { z-index: 40; }
+
+        .glass-card {
+            background: rgba(18, 8, 25, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 185, 50, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 120, 0, 0.25);
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, rgba(35, 15, 45, 0.88) 0%, rgba(18, 8, 28, 0.95) 100%);
+            border: 1.5px solid rgba(217, 119, 6, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .level-btn.completed {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border-color: #34d399;
+            color: #ffffff;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
+        }
+        .level-btn.current {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            border-color: #f59e0b;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.9);
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+        .level-btn.locked {
+            background: rgba(12, 8, 18, 0.6);
+            border-color: rgba(120, 113, 108, 0.2);
+            color: rgba(120, 113, 108, 0.4);
+            cursor: not-allowed;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        .flash-screen {
+            animation: flashAnim 0.3s ease-out;
+        }
+
+        @keyframes flashAnim {
+            0% { background-color: rgba(255, 255, 255, 0.7); }
+            100% { background-color: transparent; }
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(20, 10, 25, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.5); border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-amber-500 selection:text-black">
+
+    <!-- OVERLAY DE NARRATIVA PROFUNDA INICIAL -->
+    <div id="narrative-overlay" class="fixed inset-0 bg-black/98 z-50 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+        <div class="max-w-2xl w-full glass-card rounded-3xl p-6 sm:p-8 border-2 border-amber-500/80 shadow-[0_0_60px_rgba(245,158,11,0.5)] flex flex-col items-center">
+            
+            <div id="narrative-logo-container" class="h-16 mb-4 flex items-center justify-center">
+                <img src="shock.png" alt="Shock 99.5 FM" class="h-16 object-contain drop-shadow-[0_0_15px_rgba(255,120,0,0.8)]" onError="renderFallbackShockLogo('narrative-logo-container');">
+            </div>
+
+            <h1 class="font-cinzel text-lg sm:text-2xl font-bold text-amber-300 mb-1">Los Ecos del Monte Sinaí</h1>
+            <h2 class="text-xs sm:text-sm text-yellow-400 font-bold mb-4 uppercase tracking-wider">Éxodo 19:20 • El Desafío de la Palabra</h2>
+
+            <div class="bg-amber-950/40 p-4 sm:p-5 rounded-2xl border border-amber-500/30 mb-6 text-left max-h-[220px] sm:max-h-[260px] overflow-y-auto space-y-3">
+                <p id="narrative-text-1" class="text-xs sm:text-sm text-stone-200 leading-relaxed">
+                    En las alturas solemnes del Monte Sinaí, la presencia de Dios descendió en fuego y truenos para entregar al pueblo las tablas de la ley. Cada mandato y cada pasaje sagrado fueron grabados para iluminar el camino de la humanidad a través de las generaciones, guiando nuestros pasos con sabiduría y verdad eterna.
+                </p>
+                <p id="narrative-text-2" class="text-xs sm:text-sm text-stone-200 leading-relaxed">
+                    Este gran desafío bíblico de 40 niveles pone a prueba tu conocimiento de las Escrituras, abarcando desde el Antiguo Testamento hasta el Nuevo Testamento. Cada respuesta correcta enciende una estrella de conocimiento, iluminando tu mente con las verdades más profundas del Creador.
+                </p>
+                <p id="narrative-text-3" class="text-xs sm:text-sm text-amber-200 font-semibold leading-relaxed border-t border-amber-500/30 pt-3">
+                    Prepárate para recorrer los 10 grupos de preguntas con valor, diligencia y fe. ¡Que tu mente se fortalezca con la palabra viva y alcances la victoria total conquistando las 40 estrellas del saber bíblico!
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 w-full">
+                <button onclick="triggerNarrativeVoice()" class="flex-1 py-3 px-4 rounded-xl bg-amber-900/60 border border-amber-500/40 text-amber-300 hover:text-white font-bold text-xs transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-volume-high text-yellow-400"></i> Escuchar Narración
+                </button>
+                <button id="start-mission-btn" onclick="startMainGameFromNarrative()" disabled class="flex-1 py-3 px-6 rounded-xl bg-stone-700 text-stone-400 font-black uppercase text-xs shadow-lg transition opacity-50 cursor-not-allowed flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-lock"></i> Esperando Narración...
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CANVASES DE EFECTOS VISUALES -->
+    <canvas id="sinai-canvas"></canvas>
+    <canvas id="ambient-lightning-canvas"></canvas>
+    <canvas id="particle-canvas"></canvas>
+    <canvas id="strike-lightning-canvas"></canvas>
+
+    <!-- CONTAINER DE LA APLICACIÓN -->
+    <div class="relative z-10 min-h-screen flex flex-col justify-between">
+
+        <!-- HEADER -->
+        <header class="w-full bg-black/90 border-b border-amber-900/50 backdrop-blur-md p-2.5 sm:p-4 sticky top-0 z-30 shadow-2xl">
+            <div class="max-w-5xl mx-auto flex flex-row justify-between items-center gap-2">
+                
+                <div id="header-logo-container" class="flex items-center gap-2 h-9 sm:h-14">
+                    <img src="shock.png" alt="Shock 99.5 FM" class="h-9 sm:h-14 object-contain drop-shadow-[0_0_12px_rgba(255,120,0,0.8)]" onError="renderFallbackShockLogo('header-logo-container');">
+                </div>
+
+                <!-- HUD ESTRELLAS, ICONO SINAÍ Y AUDIO -->
+                <div class="flex items-center gap-1.5 sm:gap-3 bg-stone-900/90 px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl border border-amber-500/40">
+                    
+                    <!-- BOTÓN ICONO MONTE SINAÍ PARA ABRIR NARRATIVA -->
+                    <button onclick="openNarrativeModal()" class="text-yellow-400 hover:text-yellow-300 transition flex items-center gap-1 text-[11px] sm:text-xs font-bold bg-amber-950/60 px-2.5 sm:px-3 py-1 rounded-lg border border-amber-600/40" title="Reseña Monte Sinaí">
+                        <i class="fa-solid fa-mountain text-yellow-300 text-xs sm:text-sm animate-pulse"></i>
+                        <span class="hidden md:inline">Monte Sinaí</span>
+                    </button>
+
+                    <button id="tts-toggle" onclick="toggleAudio()" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 text-[11px] sm:text-xs font-bold bg-amber-950/60 px-2 sm:px-3 py-1 rounded-lg border border-amber-600/40">
+                        <i id="tts-icon" class="fa-solid fa-volume-high text-xs"></i>
+                        <span id="tts-status" class="hidden sm:inline">Voz ON</span>
+                    </button>
+
+                    <button onclick="confirmReset()" class="text-[11px] sm:text-xs font-bold text-red-400 hover:text-red-300 bg-red-950/60 px-2 sm:px-3 py-1 rounded-lg border border-red-700/40 transition flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> <span class="hidden sm:inline">Reiniciar</span>
+                    </button>
+
+                    <div class="flex items-center gap-1.5 text-yellow-400 font-bold border-l border-amber-500/30 pl-2 sm:pl-3">
+                        <i class="fa-solid fa-star text-amber-300 text-sm sm:text-lg drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]"></i>
+                        <div class="flex flex-col text-left">
+                            <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-amber-200/70 font-semibold leading-none">ESTRELLAS</span>
+                            <span id="star-score-hud" class="font-black text-xs sm:text-base leading-none text-yellow-300">0 / 40</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- ÁREA PRINCIPAL -->
+        <main class="flex-grow max-w-5xl w-full mx-auto p-2.5 sm:p-6 my-1 sm:my-2 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
+            
+            <!-- PANEL DE NIVELES -->
+            <section class="lg:col-span-5 glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-amber-500/40 order-2 lg:order-1">
+                <div class="flex justify-between items-center mb-2 sm:mb-3 pb-1.5 border-b border-amber-500/20">
+                    <h3 class="font-cinzel text-amber-300 font-bold text-xs sm:text-sm uppercase flex items-center gap-1.5">
+                        <i class="fa-solid fa-layer-group text-amber-400"></i> 10 Grupos (40 Niveles)
+                    </h3>
+                    <span id="progress-percent" class="text-xs font-bold text-amber-400">0%</span>
+                </div>
+
+                <div class="space-y-4 max-h-[340px] sm:max-h-[480px] overflow-y-auto pr-1">
+                    <div>
+                        <div class="flex items-center justify-between text-[11px] font-bold text-amber-200/80 mb-2 uppercase tracking-wider bg-amber-950/50 px-2 py-1 rounded border border-amber-800/40">
+                            <span><i class="fa-solid fa-book-bible text-amber-400 mr-1"></i> Antiguo Testamento</span>
+                            <span class="text-[9px] text-amber-400/80">Grupos 1 - 5 (Niveles 1 - 20)</span>
+                        </div>
+                        <div id="at-groups-container" class="space-y-2"></div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between text-[11px] font-bold text-amber-200/80 mb-2 uppercase tracking-wider bg-amber-950/50 px-2 py-1 rounded border border-amber-800/40">
+                            <span><i class="fa-solid fa-cross text-amber-400 mr-1"></i> Nuevo Testamento</span>
+                            <span class="text-[9px] text-amber-400/80">Grupos 6 - 10 (Niveles 21 - 40)</span>
+                        </div>
+                        <div id="nt-groups-container" class="space-y-2"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TARJETA DE PREGUNTA -->
+            <section class="lg:col-span-7 glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-7 relative border border-amber-500/40 shadow-[0_0_50px_rgba(0,0,0,0.9)] order-1 lg:order-2">
+                
+                <div class="flex flex-row justify-between items-center gap-2 mb-3 pb-2 border-b border-amber-500/20">
+                    <span id="testament-badge" class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
+                        <i class="fa-solid fa-scroll text-amber-400"></i> Antiguo Testamento
+                    </span>
+                    
+                    <div class="text-right">
+                        <span id="level-indicator" class="text-[11px] sm:text-xs font-extrabold text-amber-300 uppercase tracking-wider block">
+                            Nivel 1 de 40
+                        </span>
+                        <span id="group-indicator" class="text-[10px] sm:text-[11px] text-amber-200/70 font-semibold italic block">
+                            Grupo 1 (Pregunta 1/4)
+                        </span>
+                    </div>
+                </div>
+
+                <!-- BARRA DE PROGRESO -->
+                <div class="w-full bg-stone-950/80 rounded-full h-2.5 sm:h-3 border border-amber-500/30 overflow-hidden mb-4">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-500 transition-all duration-500 rounded-full" style="width: 1%"></div>
+                </div>
+
+                <!-- PREGUNTA -->
+                <h2 id="question-text" class="text-sm sm:text-xl font-bold text-amber-100 mb-3 sm:mb-4 leading-relaxed font-cinzel text-center min-h-[50px] sm:min-h-[70px] flex items-center justify-center">
+                    Cargando nivel...
+                </h2>
+
+                <div class="flex justify-center mb-3">
+                    <button onclick="readCurrentQuestion()" class="text-[11px] sm:text-xs text-amber-300/80 hover:text-amber-200 bg-amber-900/30 px-3 py-1 rounded-full border border-amber-700/40 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-play text-amber-400"></i> Escuchar Pregunta
+                    </button>
+                </div>
+
+                <!-- OPCIONES -->
+                <div id="options-container" class="space-y-2 sm:space-y-3 mb-3 sm:mb-5"></div>
+
+                <!-- CUADRO DE RETROALIMENTACIÓN BÍBLICA -->
+                <div id="feedback-box" class="hidden rounded-xl p-2.5 sm:p-4 text-center border backdrop-blur-md transition-all"></div>
+
+                <div class="mt-3 text-center">
+                    <p class="text-[10px] sm:text-[11px] text-amber-200/60 flex items-center justify-center gap-1 italic">
+                        <i class="fa-solid fa-lock text-yellow-400"></i> Responde correctamente para ganar +1 ⭐
+                    </p>
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="w-full text-center py-2.5 bg-black/90 border-t border-amber-950 text-amber-200/50 text-[10px] sm:text-xs z-10">
+            Monte Sinaí Trivia Bíblica &copy; Shock 99.5 FM — Producido para <span class="text-yellow-400 font-bold">Theos Logos</span>
+        </footer>
+
+    </div>
+
+    <!-- MODAL TROFEO FINAL -->
+    <div id="trophy-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden z-50">
+        <div class="max-w-md w-full glass-card rounded-3xl p-5 sm:p-8 text-center border-2 border-yellow-400/80 shadow-[0_0_80px_rgba(255,215,0,0.6)] relative overflow-hidden">
+            <div class="relative z-10 flex flex-col items-center">
+                <div class="inline-block p-3 sm:p-4 rounded-full bg-yellow-500/10 border-2 border-yellow-400/50 mb-2 animate-bounce">
+                    <i class="fa-solid fa-trophy text-4xl sm:text-5xl text-yellow-400"></i>
+                </div>
+
+                <h3 class="text-amber-200 text-[10px] sm:text-xs uppercase font-extrabold tracking-widest mb-1">¡VICTORIA TOTAL EN EL MONTE SINAÍ!</h3>
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-2 font-cinzel">40 Estrellas Conquistadas</h2>
+
+                <div id="trophy-logo-container" class="my-3 p-3 w-full rounded-2xl bg-black/80 border border-yellow-500/40 flex items-center justify-center min-h-[90px]">
+                    <img src="theos.png" alt="Theos Logos" class="max-h-20 sm:max-h-28 object-contain" onError="renderFallbackTheosLogo('trophy-logo-container');">
+                </div>
+
+                <p class="text-stone-300 text-xs sm:text-sm mb-4 leading-relaxed">
+                    ¡Has superado victoriosamente los <span class="text-yellow-300 font-bold">40 niveles completos</span> de la Biblia!
+                </p>
+
+                <div class="w-full space-y-2">
+                    <button onclick="resetAndPlayAgain()" class="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-black font-black uppercase text-xs shadow-lg">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Reiniciar y Jugar de Nuevo
+                    </button>
+                    <button onclick="closeTrophyModal()" class="w-full py-2.5 px-5 rounded-xl bg-stone-900 text-amber-300 font-bold text-xs border border-amber-500/30">
+                        <i class="fa-solid fa-eye mr-1.5"></i> Ver Mapa de Niveles
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT PRINCIPAL -->
+    <script>
+        function renderFallbackShockLogo(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = `
+                <div class="flex items-center gap-2 bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-3 py-1.5 rounded-xl border border-amber-400/60 shadow-[0_0_15px_rgba(220,38,38,0.7)]">
+                    <i class="fa-solid fa-bolt text-yellow-300 text-lg"></i>
+                    <div class="flex flex-col text-left leading-none">
+                        <span class="font-black italic text-white text-sm">SHOCK</span>
+                        <span class="font-bold text-yellow-300 text-[9px]">99.5 FM</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFallbackTheosLogo(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-1">
+                    <i class="fa-solid fa-book-open-reader text-yellow-400 text-2xl mb-1"></i>
+                    <span class="font-cinzel font-black text-yellow-300 text-lg">THEOS LOGOS</span>
+                </div>
+            `;
+        }
+
+        // PREGUNTAS CON CITA Y TEXTO BÍBLICO NARRADO (40 EN TOTAL: 20 ANTIGUO TESTAMENTO, 20 NUEVO TESTAMENTO)
+        const baseQuestionsAT = [
+            { question: "¿En qué monte Dios entregó los Diez Mandamientos a Moisés?", options: ["Monte Carmelo", "Monte Sinaí", "Monte Nebo", "Monte de los Olivos"], correct: 1, verse: "Éxodo 19:20", verseText: "Y descendió Jehová sobre el monte Sinaí, sobre la cumbre del monte; y llamó Jehová a Moisés a la cumbre del monte, y Moisés subió." },
+            { question: "¿Quién construyó el Arca por mandato de Dios para salvar a su familia del Diluvio?", options: ["Abraham", "Noé", "Jacob", "Isaac"], correct: 1, verse: "Génesis 6:14", verseText: "Hazte un arca de madera de gofer; harás compartimentos en el arca, y la calafatearás con brea por dentro y por fuera." },
+            { question: "¿Qué profeta fue lanzado al foso de los leones y sobrevivió milagrosamente?", options: ["Isaías", "Jeremías", "Daniel", "Ezequiel"], correct: 2, verse: "Daniel 6:22", verseText: "Mi Dios envió su ángel, el cual cerró la boca de los leones, para que no me hiciesen daño." },
+            { question: "¿Qué rey de Israel era famoso por su gran sabiduría y edificar el Templo?", options: ["David", "Saúl", "Salomón", "Ezequías"], correct: 2, verse: "1 Reyes 4:29", verseText: "Y Dios dio a Salomón sabiduría y prudencia muy grandes, y anchura de corazón como la arena que está a la orilla del mar." },
+            { question: "¿Qué mar fue dividido para que el pueblo de Israel cruzara en seco?", options: ["Mar Muerto", "Mar Rojo", "Mar de Galilea", "Mar Mediterráneo"], correct: 1, verse: "Éxodo 14:21-22", verseText: "Y extendió Moisés su mano sobre el mar... y los hijos de Israel entraron por en medio del mar, en seco." },
+            { question: "¿Quién derrotó a Goliat usando únicamente una honda y una piedra?", options: ["Sansón", "David", "Gedeón", "Josué"], correct: 1, verse: "1 Samuel 17:50", verseText: "Así venció David al filisteo con honda y piedra; e hirió al filisteo y lo mató, sin tener David espada en su mano." },
+            { question: "¿Quién fue el primer hombre creado por Dios según el Génesis?", options: ["Adán", "Abel", "Seth", "Enoc"], correct: 0, verse: "Génesis 2:7", verseText: "Entonces Jehová Dios formó al hombre del polvo de la tierra, y sopló en su nariz aliento de vida, y fue el hombre un ser viviente." },
+            { question: "¿Qué mujer se convirtió en estatua de sal por mirar atrás a Sodoma?", options: ["La esposa de Lot", "Sara", "Rebeca", "Raquel"], correct: 0, verse: "Génesis 19:26", verseText: "Entonces la mujer de Lot miró atrás, a espaldas de él, y se volvió estatua de sal." },
+            { question: "¿Quién fue vendido como esclavo por sus hermanos y llegó a ser gobernador de Egipto?", options: ["Moisés", "José", "Benjamín", "Judá"], correct: 1, verse: "Génesis 41:41", verseText: "Dijo también Faraón a José: He aquí yo te he puesto sobre toda la tierra de Egipto." },
+            { question: "¿Qué profeta hizo descender fuego del cielo en el Monte Carmelo?", options: ["Eliseo", "Elías", "Samuel", "Oseas"], correct: 1, verse: "1 Reyes 18:38", verseText: "Entonces cayó fuego de Jehová, y consumió el holocausto, la leña, las piedras y el polvo." },
+            { question: "¿Cuáles fueron las murallas que cayeron tras dar rodeos durante siete días?", options: ["Jerusalén", "Jericó", "Babilonia", "Nínive"], correct: 1, verse: "Josué 6:20", verseText: "El pueblo gritó, y los sacerdotes tocaron las trompetas... y el muro se derrumbó." },
+            { question: "¿Qué hombre se caracterizaba por su fuerza extrema vinculada a su voto nazareo?", options: ["Gedeón", "Sansón", "Booz", "Jefté"], correct: 1, verse: "Jueces 16:17", verseText: "Nunca a mi cabeza llegó navaja, porque soy nazareo de Dios desde el vientre de mi madre." },
+            { question: "¿Quién fue tragado por un gran pez tras desobedecer la orden de ir a Nínive?", options: ["Jonás", "Nahúm", "Habacuc", "Sofonías"], correct: 0, verse: "Jonás 1:17", verseText: "Pero Jehová tenía preparado un gran pez que tragase a Jonás; y estuvo Jonás en el vientre del pez tres días y tres noches." },
+            { question: "¿Qué patriarca estuvo dispuesto a ofrecer a su hijo Isaac en el monte Moriah?", options: ["Jacob", "Abraham", "Isaac", "Noé"], correct: 1, verse: "Génesis 22:10", verseText: "Y extendió Abraham su mano y tomó el cuchillo para degollar a su hijo." },
+            { question: "¿Quién interpretó los sueños del faraón sobre las vacas flacas y las vacas gordas?", options: ["Moisés", "Aarón", "José", "Daniel"], correct: 2, verse: "Génesis 41:25", verseText: "Entonces respondió José a Faraón: El sueño de Faraón es uno mismo; Dios ha mostrado a Faraón lo que va a hacer." },
+            { question: "¿Qué reina visitó al rey Salomón asombrada por su gran sabiduría?", options: ["Reina Ester", "Reina de Sabá", "Reina Vasthi", "Jezabel"], correct: 1, verse: "1 Reyes 10:1", verseText: "Oyendo la reina de Sabá la fama de Salomón... vino a probarle con preguntas difíciles." },
+            { question: "¿Quién fue la mujer valiente que rescató al pueblo judío siendo reina de Persia?", options: ["Rut", "Ester", "Noemí", "Debora"], correct: 1, verse: "Ester 4:14", verseText: "¿Y quién sabe si para esta hora has llegado al reino?" },
+            { question: "¿Qué joven pastor ungido por Samuel se convirtió en el segundo rey de Israel?", options: ["Saúl", "Salomón", "David", "Absalón"], correct: 2, verse: "1 Samuel 16:13", verseText: "Y Samuel tomó el cuerno del aceite, y unió-le en medio de sus hermanos; y desde aquel día el Espíritu de Jehová vino sobre David." },
+            { question: "¿Qué hombre justo perdió todo en una prueba pero mantuvo su fidelidad a Dios?", options: ["Job", "Abraham", "Lot", "Matusalén"], correct: 0, verse: "Job 1:21", verseText: "Jehová dio, y Jehová quitó; sea el nombre de Jehová bendito." },
+            { question: "¿Cómo se llamaba la suegra de Rut que regresó amargada a Belén?", options: ["Orfa", "Noemí", "Mara", "Abigail"], correct: 1, verse: "Rut 1:20", verseText: "Y ella les respondía: No me llaméis Noemí, sino llamadme Mara; porque en grande amargura me ha puesto el Todopoderoso." }
+        ];
+
+        const baseQuestionsNT = [
+            { question: "¿En qué ciudad nació Jesucristo conforme a las profecías?", options: ["Nazaret", "Jerusalén", "Belén", "Jericó"], correct: 2, verse: "Mateo 2:1", verseText: "Cuando Jesús nació en Belén de Judea en días del rey Herodes, vinieron del oriente a Jerusalén unos magos." },
+            { question: "¿Cuál de estos apóstoles caminó brevemente sobre el agua hacia Jesús?", options: ["Pedro", "Juan", "Santiago", "Andrés"], correct: 0, verse: "Mateo 14:29", verseText: "Y descendiendo Pedro de la barca, caminaba sobre las aguas para ir a Jesús." },
+            { question: "¿Cuál fue el primer milagro público de Jesús registrado en Canaán?", options: ["Multiplicar panes", "Sanar ciego", "Convertir agua en vino", "Resucitar a Lázaro"], correct: 2, verse: "Juan 2:11", verseText: "Este principio de señales hizo Jesús en Caná de Galilea, y manifestó su gloria; y sus discípulos creyeron en él." },
+            { question: "¿Quién fue conocido como Saulo de Tarso antes de su conversión?", options: ["Pablo", "Bernabé", "Esteban", "Mateo"], correct: 0, verse: "Hechos 13:9", verseText: "Entonces Saulo, que también es Pablo, lleno del Espíritu Santo, fijando en él los ojos..." },
+            { question: "¿Cuál es el último libro profético del Nuevo Testamento escrito por Juan?", options: ["Hechos", "Romanos", "Hebreos", "Apocalipsis"], correct: 3, verse: "Apocalipsis 1:1", verseText: "La revelación de Jesucristo, que Dios le dio, para manifestar a sus siervos las cosas que deben suceder pronto." },
+            { question: "¿Quién bautizó a Jesús en el Río Jordán?", options: ["Juan el Bautista", "Pedro", "Felipe", "Nicodemo"], correct: 0, verse: "Mateo 3:13", verseText: "Entonces Jesús vino de Galilea a Juan al Jordán, para ser bautizado por él." },
+            { question: "¿Quién fue el discípulo que traicionó a Jesús por treinta piezas de plata?", options: ["Pedro", "Judas Iscariote", "Tomás", "Mateo"], correct: 1, verse: "Mateo 26:15", verseText: "Y les dijo: ¿Qué me queréis dar, y yo os lo entregarán? Y ellos le señalaron treinta piezas de plata." },
+            { question: "¿Qué monte fue el escenario del histórico Sermón del Monte dado por Jesús?", options: ["Monte Sinaí", "Monte de las Bienaventuranzas", "Monte Tabor", "Monte Calvario"], correct: 1, verse: "Mateo 5:1-2", verseText: "Viendo la multitud, subió al monte... y abriendo su boca les enseñaba." },
+            { question: "¿Cuál de los discípulos dudó inicialmente de la resurrección de Jesús hasta verle?", options: ["Andrés", "Tomás", "Felipe", "Bartolomé"], correct: 1, verse: "Juan 20:25", verseText: "Si no viere en sus manos la señal de los clavos... no creeré." },
+            { question: "¿Qué día de la semana resucitó Jesucristo victorioso de entre los muertos?", options: ["Sábado", "Domingo (Primer día)", "Viernes", "Lunes"], correct: 1, verse: "Lucas 24:1", verseText: "El primer día de la semana, muy de mañana, vinieron al sepulcro trayendo las especias aromáticas..." },
+            { question: "¿Quién fue el joven diácono que se convirtió en el primer mártir cristiano?", options: ["Esteban", "Felipe", "Timoteo", "Bernabé"], correct: 0, verse: "Hechos 7:59", verseText: "Y apedreaban a Esteban, mientras él invocaba y decía: Señor Jesús, recibe mi espíritu." },
+            { question: "¿En qué fiesta hebrea descendió el Espíritu Santo sobre los creyentes en forma de fuego?", options: ["Pascua", "Pentecostés", "Tabernáculos", "Dedicación"], correct: 1, verse: "Hechos 2:1-4", verseText: "Cuando llegó el día de Pentecostés, estaban todos unánimes juntos... y fueron todos llenos del Espíritu Santo." },
+            { question: "¿Qué apóstol escribió la mayoría de las epístolas del Nuevo Testamento?", options: ["Pedro", "Juan", "Pablo", "Santiago"], correct: 2, verse: "2 Pedro 3:15", verseText: "Como también nuestro amado hermano Pablo, según la sabiduría que le ha sido dada, os ha escrito..." },
+            { question: "¿Qué oficial romano fue el primer gentil en bautizarse junto a su familia?", options: ["Cornelio", "Pilato", "César", "Felix"], correct: 0, verse: "Hechos 10:48", verseText: "Y mandó bautizarles en el nombre del Señor Jesús." },
+            { question: "¿En qué isla estuvo confinado el apóstol Juan cuando recibió el Apocalipsis?", options: ["Creta", "Patmos", "Chipre", "Sicilia"], correct: 1, verse: "Apocalipsis 1:9", verseText: "Yo Juan, vuestro hermano... estaba en la isla llamada Patmos, por causa de la palabra de Dios." },
+            { question: "¿Quién era el fariseo miembro del sanedrín que visitó a Jesús de noche?", options: ["Nicodemo", "Gamaliel", "Caifás", "Anás"], correct: 0, verse: "Juan 3:1-2", verseText: "Había un hombre de los fariseos que se llamaba Nicodemo, príncipe de los judíos. Este vino a Jesús de noche..." },
+            { question: "¿Cuál es el capítulo de la Biblia conocido como el capítulo del amor?", options: ["Salmos 23", "1 Corintios 13", "Romanos 8", "Juan 3"], correct: 1, verse: "1 Corintios 13:4", verseText: "El amor es sufrido, es benigno; el amor no tiene envidia, el amor no es jactancioso, no se envanece." },
+            { question: "¿Qué pareja mintió sobre una ofrenda y falleció instantáneamente ante Pedro?", options: ["Aquila y Priscila", "Ananías y Safira", "Zacarías y Elisabet", "Adán y Eva"], correct: 1, verse: "Hechos 5:5", verseText: "Al oír Ananías estas palabras, cayó y expiró. Y vino un gran temor sobre todos los que lo oyeron." },
+            { question: "¿Qué milagro realizó Jesús en las bodas de Caná convirtiendo el agua?", options: ["En aceite", "En vino", "En leche", "En miel"], correct: 1, verse: "Juan 2:9", verseText: "Cuando el maestresazala probó el agua hecha vino... llamó al esposo." },
+            { question: "¿Cuál es el libro que sigue inmediatamente después de los Hechos de los Apóstoles?", options: ["1 Corintios", "Romanos", "Gálatas", "Efesios"], correct: 1, verse: "Romanos 1:1", verseText: "Pablo, siervo de Jesucristo, llamado a ser apóstol, apartado para el evangelio de Dios." }
+        ];
+
+        const questionsDB = [];
+        for (let i = 0; i < 20; i++) {
+            const base = baseQuestionsAT[i];
+            questionsDB.push({
+                testament: "Antiguo Testamento",
+                groupNum: Math.floor(i / 4) + 1,
+                levelNum: i + 1,
+                question: `${i + 1}. ${base.question}`,
+                options: base.options,
+                correct: base.correct,
+                verse: base.verse,
+                verseText: base.verseText
+            });
+        }
+        for (let i = 0; i < 20; i++) {
+            const base = baseQuestionsNT[i];
+            questionsDB.push({
+                testament: "Nuevo Testamento",
+                groupNum: Math.floor((i + 20) / 4) + 1,
+                levelNum: i + 21,
+                question: `${i + 21}. ${base.question}`,
+                options: base.options,
+                correct: base.correct,
+                verse: base.verse,
+                verseText: base.verseText
+            });
+        }
+
+        let currentIndex = 0;
+        let maxUnlockedLevel = 0;
+        let completedLevels = new Set();
+        let isAudioEnabled = true;
+        let isAnsweringBlocked = false;
+        let bestVoice = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initAudio();
+            loadNaturalVoice();
+        });
+
+        function triggerNarrativeVoice() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            
+            const startBtn = document.getElementById('start-mission-btn');
+            startBtn.disabled = true;
+            startBtn.className = "flex-1 py-3 px-6 rounded-xl bg-stone-700 text-stone-400 font-black uppercase text-xs shadow-lg transition opacity-50 cursor-not-allowed flex items-center justify-center gap-2";
+            startBtn.innerHTML = `<i class="fa-solid fa-volume-high animate-pulse"></i> Narrando Reseña...`;
+
+            const text1 = document.getElementById('narrative-text-1').innerText;
+            const text2 = document.getElementById('narrative-text-2').innerText;
+            const text3 = document.getElementById('narrative-text-3').innerText;
+            const fullNarrative = `${text1} ${text2} ${text3}`;
+
+            speakText(fullNarrative, () => {
+                startBtn.disabled = false;
+                startBtn.className = "flex-1 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black font-black uppercase text-xs shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer";
+                startBtn.innerHTML = `<i class="fa-solid fa-play"></i> ¡Iniciar Desafío!`;
+            });
+        }
+
+        function openNarrativeModal() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('narrative-overlay').style.display = 'flex';
+            triggerNarrativeVoice();
+        }
+
+        function startMainGameFromNarrative() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('narrative-overlay').style.display = 'none';
+            loadSavedProgress();
+            renderLevelGrid();
+            renderQuestion();
+        }
+
+        function loadSavedProgress() {
+            try {
+                const savedMax = localStorage.getItem('sinai_40_max');
+                const savedCompleted = localStorage.getItem('sinai_40_completed');
+                if (savedMax !== null) maxUnlockedLevel = parseInt(savedMax, 10);
+                if (savedCompleted !== null) completedLevels = new Set(JSON.parse(savedCompleted));
+            } catch(e) {}
+            updateHUDScore();
+        }
+
+        function saveProgress() {
+            try {
+                localStorage.setItem('sinai_40_max', maxUnlockedLevel);
+                localStorage.setItem('sinai_40_completed', JSON.stringify(Array.from(completedLevels)));
+            } catch(e) {}
+        }
+
+        function updateHUDScore() {
+            document.getElementById('star-score-hud').innerText = `${completedLevels.size} / 40`;
+        }
+
+        function confirmReset() {
+            if (confirm("¿Seguro que deseas borrar todo tu progreso y volver al Nivel 1?")) {
+                resetAndPlayAgain();
+            }
+        }
+
+        function resetAndPlayAgain() {
+            try {
+                localStorage.removeItem('sinai_40_max');
+                localStorage.removeItem('sinai_40_completed');
+            } catch(e) {}
+            maxUnlockedLevel = 0;
+            completedLevels.clear();
+            currentIndex = 0;
+            updateHUDScore();
+            document.getElementById('trophy-modal').classList.add('hidden');
+            renderLevelGrid();
+            renderQuestion();
+        }
+
+        function closeTrophyModal() {
+            document.getElementById('trophy-modal').classList.add('hidden');
+        }
+
+        let audioCtx = null;
+        function initAudio() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            } catch(e) {}
+        }
+
+        function playLightningSound() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(700, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } catch(e) {}
+        }
+
+        function playErrorSound() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.setValueAtTime(100, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch(e) {}
+        }
+
+        function loadNaturalVoice() {
+            if (!('speechSynthesis' in window)) return;
+            const voices = window.speechSynthesis.getVoices();
+            bestVoice = voices.find(v => v.lang.startsWith('es') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Jorge') || v.name.includes('Monica')))
+                     || voices.find(v => v.lang.startsWith('es'));
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadNaturalVoice;
+        }
+
+        function speakText(text, onEndCallback = null) {
+            if (!isAudioEnabled || !('speechSynthesis' in window)) {
+                if (onEndCallback) onEndCallback();
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            if (bestVoice) utterance.voice = bestVoice;
+            if (onEndCallback) {
+                utterance.onend = onEndCallback;
+                utterance.onerror = onEndCallback;
+            }
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleAudio() {
+            isAudioEnabled = !isAudioEnabled;
+            document.getElementById('tts-status').innerText = isAudioEnabled ? "Voz ON" : "Voz OFF";
+            document.getElementById('tts-icon').className = isAudioEnabled ? "fa-solid fa-volume-high text-xs" : "fa-solid fa-volume-xmark text-xs text-red-400";
+            if (!isAudioEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
+        function renderLevelGrid() {
+            const atContainer = document.getElementById('at-groups-container');
+            const ntContainer = document.getElementById('nt-groups-container');
+            if (!atContainer || !ntContainer) return;
+            atContainer.innerHTML = '';
+            ntContainer.innerHTML = '';
+
+            for (let g = 1; g <= 10; g++) {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = "bg-stone-900/60 p-2 rounded-xl border border-amber-500/20";
+                const startLvl = (g - 1) * 4;
+                const endLvl = startLvl + 3;
+
+                groupDiv.innerHTML = `
+                    <div class="text-[10px] font-bold text-amber-300 mb-1 flex justify-between items-center">
+                        <span>Grupo ${g}</span>
+                        <span class="text-[9px] text-stone-400">Niveles ${startLvl + 1} - ${endLvl + 1}</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1.5" id="group-grid-${g}"></div>
+                `;
+
+                if (g <= 5) atContainer.appendChild(groupDiv);
+                else ntContainer.appendChild(groupDiv);
+
+                const gridEl = document.getElementById(`group-grid-${g}`);
+                for (let i = startLvl; i <= endLvl; i++) {
+                    const btn = document.createElement('button');
+                    let stateClass = 'locked';
+                    let iconHtml = `<i class="fa-solid fa-lock text-[8px] block opacity-50"></i>`;
+
+                    if (completedLevels.has(i)) {
+                        stateClass = 'completed';
+                        iconHtml = `<i class="fa-solid fa-check text-[8px] block text-emerald-200"></i>`;
+                    } else if (i === currentIndex) {
+                        stateClass = 'current';
+                        iconHtml = `<i class="fa-solid fa-play text-[8px] block"></i>`;
+                    } else if (i <= maxUnlockedLevel) {
+                        stateClass = 'unlocked bg-stone-800 text-amber-300 border-amber-500/50';
+                        iconHtml = `<i class="fa-solid fa-unlock text-[8px] block text-amber-400"></i>`;
+                    }
+
+                    btn.className = `level-btn ${stateClass} border h-8 rounded-lg flex flex-col items-center justify-center font-bold text-[11px] shadow-sm transition`;
+                    btn.innerHTML = `<span>${i + 1}</span>${iconHtml}`;
+
+                    if (i <= maxUnlockedLevel) {
+                        btn.onclick = () => {
+                            currentIndex = i;
+                            renderLevelGrid();
+                            renderQuestion();
+                        };
+                    } else {
+                        btn.disabled = true;
+                    }
+                    gridEl.appendChild(btn);
+                }
+            }
+
+            const percent = Math.round((completedLevels.size / 40) * 100);
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+        }
+
+        function renderQuestion() {
+            isAnsweringBlocked = false;
+            const q = questionsDB[currentIndex];
+            const currentLevel = currentIndex + 1;
+
+            document.getElementById('testament-badge').innerHTML = `<i class="fa-solid ${currentIndex < 20 ? 'fa-scroll' : 'fa-cross'} text-amber-400"></i> ${q.testament}`;
+            document.getElementById('level-indicator').innerText = `Nivel ${currentLevel} de 40`;
+            document.getElementById('group-indicator').innerText = `Grupo ${q.groupNum} (Pregunta ${((currentLevel - 1) % 4) + 1}/4)`;
+
+            const progressPercent = (completedLevels.size / 40) * 100;
+            document.getElementById('progress-bar').style.width = `${Math.max(progressPercent, 1)}%`;
+            document.getElementById('question-text').innerText = q.question;
+
+            const feedback = document.getElementById('feedback-box');
+            feedback.className = "hidden";
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-3 sm:p-4 rounded-xl font-semibold text-stone-200 flex items-center justify-between text-xs sm:text-sm";
+                btn.onclick = () => handleAnswer(idx, btn);
+                btn.innerHTML = `<span>${opt}</span><span class="w-6 h-6 rounded-full border border-amber-500/30 flex items-center justify-center text-xs font-bold text-amber-400 bg-black/40">${String.fromCharCode(65 + idx)}</span>`;
+                optionsContainer.appendChild(btn);
+            });
+
+            readCurrentQuestion();
+        }
+
+        function readCurrentQuestion() {
+            const q = questionsDB[currentIndex];
+            speakText(`Nivel ${currentIndex + 1}. ${q.question}. Opción A: ${q.options[0]}. Opción B: ${q.options[1]}. Opción C: ${q.options[2]}. Opción D: ${q.options[3]}`);
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            if (isAnsweringBlocked) return;
+
+            const q = questionsDB[currentIndex];
+            const feedback = document.getElementById('feedback-box');
+
+            if (selectedIndex === q.correct) {
+                isAnsweringBlocked = true;
+
+                const rect = btnElement.getBoundingClientRect();
+                triggerTargetedLightningStrike(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                playLightningSound();
+                spawnStarBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+                if (!completedLevels.has(currentIndex)) completedLevels.add(currentIndex);
+                if (currentIndex + 1 > maxUnlockedLevel && currentIndex + 1 < 40) maxUnlockedLevel = currentIndex + 1;
+
+                saveProgress();
+                updateHUDScore();
+
+                btnElement.className = "w-full text-left p-3 sm:p-4 rounded-xl font-bold text-black bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-500 border-2 border-yellow-200 shadow-lg flex items-center justify-between text-xs sm:text-sm";
+
+                feedback.innerHTML = `
+                    <div class="flex flex-col items-center gap-1.5 text-yellow-200">
+                        <div class="font-black text-xs sm:text-sm uppercase tracking-wider text-yellow-300">¡CORRECTO! +1 ESTRELLA GANADA ⭐</div>
+                        <div class="text-[11px] sm:text-xs font-bold text-amber-300 italic border-t border-amber-500/30 pt-1.5 w-full"><i class="fa-solid fa-book-bible text-amber-400 mr-1"></i> ${q.verse}</div>
+                        <p class="text-[10px] sm:text-[11px] text-stone-200 font-medium italic leading-relaxed">"${q.verseText}"</p>
+                    </div>
+                `;
+                feedback.className = "block rounded-xl p-3 sm:p-4 text-center bg-amber-950/95 border-2 border-amber-500/80 shadow-2xl backdrop-blur-md mb-3";
+
+                speakText(`¡Correcto! Como dice en ${q.verse}: ${q.verseText}`, () => {
+                    setTimeout(() => {
+                        if (completedLevels.size === 40) {
+                            showTrophyModal();
+                        } else {
+                            if (currentIndex < 39) currentIndex++;
+                            renderLevelGrid();
+                            renderQuestion();
+                        }
+                    }, 1200);
+                });
+
+            } else {
+                playErrorSound();
+                btnElement.className = "w-full text-left p-3 sm:p-4 rounded-xl font-semibold text-red-200 bg-red-950/70 border-2 border-red-500/80 flex items-center justify-between text-xs sm:text-sm";
+                btnElement.disabled = true;
+
+                feedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> Incorrecto. Intenta con otra opción.`;
+                feedback.className = "block rounded-xl p-2.5 sm:p-3 text-center font-bold text-xs sm:text-sm bg-red-950/80 border border-red-500/60 text-red-200 backdrop-blur-md mb-2";
+
+                speakText("Incorrecto. Intenta con otra opción.");
+            }
+        }
+
+        function showTrophyModal() {
+            document.getElementById('trophy-modal').classList.remove('hidden');
+            speakText("¡Felicidades! Has completado victoriosamente los 40 niveles de la Biblia.");
+        }
+
+        // CANVASES Y EFECTOS VISUALES (RAYOS Y ESTRELLAS)
+        const sinaiCanvas = document.getElementById('sinai-canvas');
+        const sCtx = sinaiCanvas ? sinaiCanvas.getContext('2d') : null;
+        const strikeCanvas = document.getElementById('strike-lightning-canvas');
+        const stCtx = strikeCanvas ? strikeCanvas.getContext('2d') : null;
+        const particleCanvas = document.getElementById('particle-canvas');
+        const pCtx = particleCanvas ? particleCanvas.getContext('2d') : null;
+
+        let particles = [];
+        let lightningBolts = [];
+
+        function resizeCanvases() {
+            if (sinaiCanvas) { sinaiCanvas.width = window.innerWidth; sinaiCanvas.height = window.innerHeight; }
+            if (strikeCanvas) { strikeCanvas.width = window.innerWidth; strikeCanvas.height = window.innerHeight; }
+            if (particleCanvas) { particleCanvas.width = window.innerWidth; particleCanvas.height = window.innerHeight; }
+            drawSinaiBackground();
+        }
+
+        function drawSinaiBackground() {
+            if (!sCtx || !sinaiCanvas) return;
+            const w = sinaiCanvas.width, h = sinaiCanvas.height;
+            sCtx.clearRect(0, 0, w, h);
+            const skyGrad = sCtx.createLinearGradient(0, 0, 0, h);
+            skyGrad.addColorStop(0, '#040207');
+            skyGrad.addColorStop(1, '#050204');
+            sCtx.fillStyle = skyGrad;
+            sCtx.fillRect(0, 0, w, h);
+        }
+
+        function triggerTargetedLightningStrike(targetX, targetY) {
+            document.body.classList.add('flash-screen');
+            setTimeout(() => document.body.classList.remove('flash-screen'), 300);
+
+            if (!stCtx) return;
+            let points = [];
+            let currX = targetX + (Math.random() - 0.5) * 60;
+            let currY = 0;
+            points.push({x: currX, y: currY});
+
+            while (currY < targetY) {
+                currY += 20 + Math.random() * 30;
+                currX += (Math.random() - 0.5) * 40;
+                if (currY > targetY) currY = targetY;
+                points.push({x: currX, y: currY});
+            }
+
+            lightningBolts.push({ points: points, alpha: 1.0 });
+        }
+
+        function spawnStarBurst(x, y) {
+            for (let i = 0; i < 25; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 2 + Math.random() * 8;
+                particles.push({
+                    x: x, y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 8 + Math.random() * 10,
+                    rotation: Math.random() * Math.PI,
+                    rotSpeed: (Math.random() - 0.5) * 0.3,
+                    alpha: 1.0,
+                    color: Math.random() > 0.3 ? '#facc15' : '#ffffff'
+                });
+            }
+        }
+
+        function renderVisualEffects() {
+            if (stCtx && strikeCanvas) {
+                stCtx.clearRect(0, 0, strikeCanvas.width, strikeCanvas.height);
+                for (let i = lightningBolts.length - 1; i >= 0; i--) {
+                    let bolt = lightningBolts[i];
+                    if (bolt.alpha <= 0) { lightningBolts.splice(i, 1); continue; }
+
+                    stCtx.save();
+                    stCtx.beginPath();
+                    stCtx.moveTo(bolt.points[0].x, bolt.points[0].y);
+                    for (let p = 1; p < bolt.points.length; p++) {
+                        stCtx.lineTo(bolt.points[p].x, bolt.points[p].y);
+                    }
+                    stCtx.strokeStyle = `rgba(254, 240, 138, ${bolt.alpha})`;
+                    stCtx.lineWidth = 5;
+                    stCtx.shadowColor = '#eab308';
+                    stCtx.shadowBlur = 25;
+                    stCtx.stroke();
+                    stCtx.restore();
+
+                    bolt.alpha -= 0.08;
+                }
+            }
+
+            if (pCtx && particleCanvas) {
+                pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    let p = particles[i];
+                    if (p.alpha <= 0) { particles.splice(i, 1); continue; }
+
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.2;
+                    p.rotation += p.rotSpeed;
+                    p.alpha -= 0.02;
+
+                    pCtx.save();
+                    pCtx.translate(p.x, p.y);
+                    pCtx.rotate(p.rotation);
+                    pCtx.fillStyle = p.color;
+                    pCtx.globalAlpha = p.alpha;
+                    pCtx.shadowColor = '#f59e0b';
+                    pCtx.shadowBlur = 10;
+
+                    pCtx.beginPath();
+                    for (let s = 0; s < 5; s++) {
+                        pCtx.lineTo(Math.cos((s * 4 * Math.PI) / 5) * p.size, Math.sin((s * 4 * Math.PI) / 5) * p.size);
+                        pCtx.lineTo(Math.cos(((s * 4 + 2) * Math.PI) / 5) * (p.size / 2), Math.sin(((s * 4 + 2) * Math.PI) / 5) * (p.size / 2));
+                    }
+                    pCtx.closePath();
+                    pCtx.fill();
+                    pCtx.restore();
+                }
+            }
+
+            requestAnimationFrame(renderVisualEffects);
+        }
+
+        window.onload = function() {
+            resizeCanvases();
+            renderVisualEffects();
+        };
+        window.onresize = resizeCanvases;
+    </script>
+</body>
+</html>
