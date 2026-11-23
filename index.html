@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Desafío Bíblico - 40 Niveles | Shock 99.5 FM & Theos Logos</title>
+    <title>Pequeños Exploradores Shock - La Oveja Perdida | Shock 99.5 FM & Theos Logos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -26,19 +26,15 @@
             font-family: 'Cinzel', serif;
         }
 
-        #sinai-canvas, #ambient-lightning-canvas, #strike-lightning-canvas, #particle-canvas {
+        #celebration-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             pointer-events: none !important;
+            z-index: 40;
         }
-
-        #sinai-canvas { z-index: 0; }
-        #ambient-lightning-canvas { z-index: 1; }
-        #particle-canvas { z-index: 35; }
-        #strike-lightning-canvas { z-index: 40; }
 
         .glass-card {
             background: rgba(18, 8, 25, 0.94);
@@ -48,37 +44,67 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 120, 0, 0.25);
         }
 
-        .option-btn {
-            background: linear-gradient(135deg, rgba(35, 15, 45, 0.88) 0%, rgba(18, 8, 28, 0.95) 100%);
-            border: 1.5px solid rgba(217, 119, 6, 0.4);
-            transition: all 0.2s ease;
+        #game-pasture {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            background: linear-gradient(180deg, #235427 0%, #0c2c0e 100%);
+            border: 2px solid rgba(245, 158, 11, 0.5);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
         }
 
-        .option-btn:active:not(:disabled) {
-            transform: scale(0.98);
+        #rescued-fold {
+            position: relative;
+            width: 100%;
+            min-height: 380px;
+            background: radial-gradient(circle, rgba(40,20,5,0.9) 0%, rgba(15,8,3,0.95) 100%);
+            border: 2px dashed rgba(245, 158, 11, 0.6);
+            border-radius: 1.5rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
         }
 
-        .level-btn.completed {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        .animal-btn {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .animal-btn:active {
+            transform: scale(0.85);
+        }
+
+        .obstacle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .level-grid-btn.completed {
+            background: #059669;
             border-color: #34d399;
-            color: #ffffff;
-            box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
+            color: #fff;
         }
-        .level-btn.current {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        .level-grid-btn.current {
+            background: #d97706;
             border-color: #f59e0b;
-            color: #ffffff;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.9);
-            animation: pulseGlow 1.5s infinite alternate;
+            color: #fff;
+            animation: pulse 1.5s infinite alternate;
         }
-        .level-btn.locked {
-            background: rgba(12, 8, 18, 0.6);
-            border-color: rgba(120, 113, 108, 0.2);
-            color: rgba(120, 113, 108, 0.4);
+        .level-grid-btn.locked {
+            background: rgba(20, 10, 25, 0.6);
+            border-color: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.3);
             cursor: not-allowed;
         }
 
-        @keyframes pulseGlow {
+        @keyframes pulse {
             0% { transform: scale(1); }
             100% { transform: scale(1.05); }
         }
@@ -88,7 +114,7 @@
         }
 
         @keyframes flashAnim {
-            0% { background-color: rgba(255, 255, 255, 0.7); }
+            0% { background-color: rgba(255, 215, 0, 0.4); }
             100% { background-color: transparent; }
         }
 
@@ -104,21 +130,21 @@
         <div class="max-w-2xl w-full glass-card rounded-3xl p-6 sm:p-8 border-2 border-amber-500/80 shadow-[0_0_60px_rgba(245,158,11,0.5)] flex flex-col items-center">
             
             <div id="narrative-logo-container" class="h-16 mb-4 flex items-center justify-center">
-                <img src="shock.png" alt="Shock 99.5 FM" class="h-16 object-contain drop-shadow-[0_0_15px_rgba(255,120,0,0.8)]" onError="renderFallbackShockLogo('narrative-logo-container');">
+                <img src="shock.png" alt="Shock 99.5 FM" class="h-16 object-contain drop-shadow-[0_0_15px_rgba(255,120,0,0.8)]" onError="renderFallbackShockLogo('narrative-logo-container', 64);">
             </div>
 
-            <h1 class="font-cinzel text-lg sm:text-2xl font-bold text-amber-300 mb-1">Los Ecos del Monte Sinaí</h1>
-            <h2 class="text-xs sm:text-sm text-yellow-400 font-bold mb-4 uppercase tracking-wider">Éxodo 19:20 • El Desafío de la Palabra</h2>
+            <h1 class="font-cinzel text-lg sm:text-2xl font-bold text-amber-300 mb-1">El Buen Pastor y la Oveja Perdida</h1>
+            <h2 class="text-xs sm:text-sm text-yellow-400 font-bold mb-4 uppercase tracking-wider">Lucas 15:4 • Un Amor que no se Rinde</h2>
 
             <div class="bg-amber-950/40 p-4 sm:p-5 rounded-2xl border border-amber-500/30 mb-6 text-left max-h-[220px] sm:max-h-[260px] overflow-y-auto space-y-3">
                 <p id="narrative-text-1" class="text-xs sm:text-sm text-stone-200 leading-relaxed">
-                    En las alturas solemnes del Monte Sinaí, la presencia de Dios descendió en fuego y truenos para entregar al pueblo las tablas de la ley. Cada mandato y cada pasaje sagrado fueron grabados para iluminar el camino de la humanidad a través de las generaciones, guiando nuestros pasos con sabiduría y verdad eterna.
+                    En medio de los campos y colinas de Judea, el pastor cuida con esmero de su rebaño. Cada oveja tiene un nombre y es amada profundamente. Sin embargo, en un descuido o buscando nuevos horizontes, una pequeña oveja se aparta del camino y se pierde en la espesura, expuesta al peligro y a la soledad.
                 </p>
                 <p id="narrative-text-2" class="text-xs sm:text-sm text-stone-200 leading-relaxed">
-                    Este gran desafío bíblico de 40 niveles pone a prueba tu conocimiento de las Escrituras, abarcando desde el Antiguo Testamento hasta el Nuevo Testamento. Cada respuesta correcta enciende una estrella de conocimiento, iluminando tu mente con las verdades más profundas del Creador.
+                    Lejos de darla por olvidada, el Buen Pastor deja las noventa y nueve en el aprisco y emprende un viaje lleno de valentía para buscar a la que se había extraviado, hasta que la halla con alegría. Esa es la historia de cómo Jesús vino a buscar y a salvar lo que se había perdido, mostrando un amor inagotable.
                 </p>
                 <p id="narrative-text-3" class="text-xs sm:text-sm text-amber-200 font-semibold leading-relaxed border-t border-amber-500/30 pt-3">
-                    Prepárate para recorrer los 10 grupos de preguntas con valor, diligencia y fe. ¡Que tu mente se fortalezca con la palabra viva y alcances la victoria total conquistando las 40 estrellas del saber bíblico!
+                    Hoy, este juego nos recuerda nuestra hermosa misión de reflejar ese mismo amor. Hay corazones que necesitan ser alcanzados y rescatados. ¡Seamos fieles exploradores, llevemos el mensaje de salvación y acompáñanos a rescatar las 100 ovejas perdidas llevándolas al Redil Protegido de Dios!
                 </p>
             </div>
 
@@ -133,30 +159,26 @@
         </div>
     </div>
 
-    <!-- CANVASES DE EFECTOS VISUALES -->
-    <canvas id="sinai-canvas"></canvas>
-    <canvas id="ambient-lightning-canvas"></canvas>
-    <canvas id="particle-canvas"></canvas>
-    <canvas id="strike-lightning-canvas"></canvas>
+    <canvas id="celebration-canvas"></canvas>
 
-    <!-- CONTAINER DE LA APLICACIÓN -->
+    <!-- APP CONTAINER -->
     <div class="relative z-10 min-h-screen flex flex-col justify-between">
 
         <!-- HEADER -->
         <header class="w-full bg-black/90 border-b border-amber-900/50 backdrop-blur-md p-2.5 sm:p-4 sticky top-0 z-30 shadow-2xl">
-            <div class="max-w-5xl mx-auto flex flex-row justify-between items-center gap-2">
+            <div class="max-w-7xl mx-auto flex flex-row justify-between items-center gap-2">
                 
                 <div id="header-logo-container" class="flex items-center gap-2 h-9 sm:h-14">
-                    <img src="shock.png" alt="Shock 99.5 FM" class="h-9 sm:h-14 object-contain drop-shadow-[0_0_12px_rgba(255,120,0,0.8)]" onError="renderFallbackShockLogo('header-logo-container');">
+                    <img src="shock.png" alt="Shock 99.5 FM" class="h-9 sm:h-14 object-contain drop-shadow-[0_0_12px_rgba(255,120,0,0.8)]" onError="renderFallbackShockLogo('header-logo-container', 48);">
                 </div>
 
-                <!-- HUD ESTRELLAS, ICONO SINAÍ Y AUDIO -->
+                <!-- HUD STAR SCORE E ICONO DE RESEÑA -->
                 <div class="flex items-center gap-1.5 sm:gap-3 bg-stone-900/90 px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl border border-amber-500/40">
                     
-                    <!-- BOTÓN ICONO MONTE SINAÍ PARA ABRIR NARRATIVA -->
-                    <button onclick="openNarrativeModal()" class="text-yellow-400 hover:text-yellow-300 transition flex items-center gap-1 text-[11px] sm:text-xs font-bold bg-amber-950/60 px-2.5 sm:px-3 py-1 rounded-lg border border-amber-600/40" title="Reseña Monte Sinaí">
-                        <i class="fa-solid fa-mountain text-yellow-300 text-xs sm:text-sm animate-pulse"></i>
-                        <span class="hidden md:inline">Monte Sinaí</span>
+                    <!-- BOTÓN ICONO DE LA RESEÑA BÍBLICA -->
+                    <button onclick="openNarrativeModal()" class="text-yellow-400 hover:text-yellow-300 transition flex items-center gap-1 text-[11px] sm:text-xs font-bold bg-amber-950/60 px-2.5 sm:px-3 py-1 rounded-lg border border-amber-600/40" title="Reseña del Buen Pastor">
+                        <i class="fa-solid fa-book-bible text-yellow-300 text-xs sm:text-sm animate-pulse"></i>
+                        <span class="hidden md:inline">El Buen Pastor</span>
                     </button>
 
                     <button id="tts-toggle" onclick="toggleAudio()" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 text-[11px] sm:text-xs font-bold bg-amber-950/60 px-2 sm:px-3 py-1 rounded-lg border border-amber-600/40">
@@ -171,8 +193,8 @@
                     <div class="flex items-center gap-1.5 text-yellow-400 font-bold border-l border-amber-500/30 pl-2 sm:pl-3">
                         <i class="fa-solid fa-star text-amber-300 text-sm sm:text-lg drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]"></i>
                         <div class="flex flex-col text-left">
-                            <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-amber-200/70 font-semibold leading-none">ESTRELLAS</span>
-                            <span id="star-score-hud" class="font-black text-xs sm:text-base leading-none text-yellow-300">0 / 40</span>
+                            <span class="text-[8px] sm:text-[9px] uppercase tracking-wider text-amber-200/70 font-semibold leading-none">OVEJAS</span>
+                            <span id="star-score-hud" class="font-black text-xs sm:text-base leading-none text-yellow-300">0 / 100</span>
                         </div>
                     </div>
                 </div>
@@ -180,128 +202,162 @@
             </div>
         </header>
 
-        <!-- ÁREA PRINCIPAL -->
-        <main class="flex-grow max-w-5xl w-full mx-auto p-2.5 sm:p-6 my-1 sm:my-2 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
+        <!-- MAIN AREA -->
+        <main class="flex-grow max-w-7xl w-full mx-auto p-2.5 sm:p-6 my-1 sm:my-2 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
             
-            <!-- PANEL DE NIVELES -->
-            <section class="lg:col-span-5 glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-amber-500/40 order-2 lg:order-1">
-                <div class="flex justify-between items-center mb-2 sm:mb-3 pb-1.5 border-b border-amber-500/20">
-                    <h3 class="font-cinzel text-amber-300 font-bold text-xs sm:text-sm uppercase flex items-center gap-1.5">
-                        <i class="fa-solid fa-layer-group text-amber-400"></i> 10 Grupos (40 Niveles)
+            <!-- MAPA DE 40 NIVELES -->
+            <section class="lg:col-span-3 glass-card rounded-2xl sm:rounded-3xl p-3 border border-amber-500/40 order-2 lg:order-1">
+                <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-amber-500/20">
+                    <h3 class="font-cinzel text-amber-300 font-bold text-xs uppercase flex items-center gap-1">
+                        <i class="fa-solid fa-layer-group text-amber-400"></i> Niveles (40)
                     </h3>
                     <span id="progress-percent" class="text-xs font-bold text-amber-400">0%</span>
                 </div>
 
-                <div class="space-y-4 max-h-[340px] sm:max-h-[480px] overflow-y-auto pr-1">
-                    <div>
-                        <div class="flex items-center justify-between text-[11px] font-bold text-amber-200/80 mb-2 uppercase tracking-wider bg-amber-950/50 px-2 py-1 rounded border border-amber-800/40">
-                            <span><i class="fa-solid fa-book-bible text-amber-400 mr-1"></i> Antiguo Testamento</span>
-                            <span class="text-[9px] text-amber-400/80">Grupos 1 - 5 (Niveles 1 - 20)</span>
-                        </div>
-                        <div id="at-groups-container" class="space-y-2"></div>
-                    </div>
-
-                    <div>
-                        <div class="flex items-center justify-between text-[11px] font-bold text-amber-200/80 mb-2 uppercase tracking-wider bg-amber-950/50 px-2 py-1 rounded border border-amber-800/40">
-                            <span><i class="fa-solid fa-cross text-amber-400 mr-1"></i> Nuevo Testamento</span>
-                            <span class="text-[9px] text-amber-400/80">Grupos 6 - 10 (Niveles 21 - 40)</span>
-                        </div>
-                        <div id="nt-groups-container" class="space-y-2"></div>
-                    </div>
-                </div>
+                <div id="levels-list" class="grid grid-cols-4 gap-2 max-h-[360px] overflow-y-auto pr-1"></div>
             </section>
 
-            <!-- TARJETA DE PREGUNTA -->
-            <section class="lg:col-span-7 glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-7 relative border border-amber-500/40 shadow-[0_0_50px_rgba(0,0,0,0.9)] order-1 lg:order-2">
+            <!-- CAMPO DE BÚSQUEDA -->
+            <section class="lg:col-span-6 glass-card rounded-2xl sm:rounded-3xl p-4 relative border border-amber-500/40 shadow-[0_0_50px_rgba(0,0,0,0.9)] order-1 lg:order-2">
                 
-                <div class="flex flex-row justify-between items-center gap-2 mb-3 pb-2 border-b border-amber-500/20">
-                    <span id="testament-badge" class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
-                        <i class="fa-solid fa-scroll text-amber-400"></i> Antiguo Testamento
+                <div class="flex flex-row justify-between items-center gap-2 mb-2 pb-2 border-b border-amber-500/20">
+                    <span id="redil-badge" class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                        Nivel 1 de 40
                     </span>
                     
-                    <div class="text-right">
-                        <span id="level-indicator" class="text-[11px] sm:text-xs font-extrabold text-amber-300 uppercase tracking-wider block">
-                            Nivel 1 de 40
-                        </span>
-                        <span id="group-indicator" class="text-[10px] sm:text-[11px] text-amber-200/70 font-semibold italic block">
-                            Grupo 1 (Pregunta 1/4)
-                        </span>
-                    </div>
-                </div>
-
-                <!-- BARRA DE PROGRESO -->
-                <div class="w-full bg-stone-950/80 rounded-full h-2.5 sm:h-3 border border-amber-500/30 overflow-hidden mb-4">
-                    <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-500 transition-all duration-500 rounded-full" style="width: 1%"></div>
-                </div>
-
-                <!-- PREGUNTA -->
-                <h2 id="question-text" class="text-sm sm:text-xl font-bold text-amber-100 mb-3 sm:mb-4 leading-relaxed font-cinzel text-center min-h-[50px] sm:min-h-[70px] flex items-center justify-center">
-                    Cargando nivel...
-                </h2>
-
-                <div class="flex justify-center mb-3">
-                    <button onclick="readCurrentQuestion()" class="text-[11px] sm:text-xs text-amber-300/80 hover:text-amber-200 bg-amber-900/30 px-3 py-1 rounded-full border border-amber-700/40 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-circle-play text-amber-400"></i> Escuchar Pregunta
+                    <button onclick="hintSheep()" class="text-[11px] sm:text-xs bg-amber-900/40 hover:bg-amber-800/60 text-amber-300 font-bold px-3 py-1 rounded-xl border border-amber-600/50 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb text-yellow-400"></i> Pista
                     </button>
                 </div>
 
-                <!-- OPCIONES -->
-                <div id="options-container" class="space-y-2 sm:space-y-3 mb-3 sm:mb-5"></div>
+                <h2 id="instruction-text" class="text-xs sm:text-sm font-bold text-amber-100 mb-2 font-cinzel text-center">
+                    Encuentra las ovejas perdidas con cinta dorada ⭐
+                </h2>
 
-                <!-- CUADRO DE RETROALIMENTACIÓN BÍBLICA -->
-                <div id="feedback-box" class="hidden rounded-xl p-2.5 sm:p-4 text-center border backdrop-blur-md transition-all"></div>
+                <!-- PASTIZAL DE JUEGO -->
+                <div id="game-pasture"></div>
 
-                <div class="mt-3 text-center">
-                    <p class="text-[10px] sm:text-[11px] text-amber-200/60 flex items-center justify-center gap-1 italic">
-                        <i class="fa-solid fa-lock text-yellow-400"></i> Responde correctamente para ganar +1 ⭐
-                    </p>
+                <!-- ALERTA DE RECOMPENSA -->
+                <div id="feedback-message" class="hidden absolute inset-0 bg-black/85 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-4 z-30">
+                    <i class="fa-solid fa-bolt text-5xl text-yellow-400 mb-2 animate-bounce"></i>
+                    <h3 id="feedback-title" class="text-xl font-black text-yellow-300 font-cinzel">¡OVEJA SALVADA!</h3>
+                    <p id="feedback-desc" class="text-xs text-stone-200 mt-1">+1 Oveja llevada al Redil Protegido ⭐</p>
                 </div>
 
+            </section>
+
+            <!-- REDIL DERECHO DE OVEJAS RESCATADAS (HASTA 100) -->
+            <section class="lg:col-span-3 glass-card rounded-2xl sm:rounded-3xl p-3 border border-amber-500/40 order-3 flex flex-col items-center">
+                <div class="w-full flex justify-between items-center mb-2 pb-1.5 border-b border-amber-500/20 text-center">
+                    <h3 class="font-cinzel text-amber-300 font-bold text-xs uppercase flex items-center gap-1">
+                        <i class="fa-solid fa-fence text-amber-400"></i> Redil Protegido
+                    </h3>
+                    <span id="rescued-count" class="text-xs font-black text-yellow-300">0 / 100</span>
+                </div>
+
+                <div id="rescued-fold" class="p-2 flex flex-wrap content-start justify-center gap-1 max-h-[360px] overflow-y-auto"></div>
             </section>
 
         </main>
 
         <!-- FOOTER -->
         <footer class="w-full text-center py-2.5 bg-black/90 border-t border-amber-950 text-amber-200/50 text-[10px] sm:text-xs z-10">
-            Monte Sinaí Trivia Bíblica &copy; Shock 99.5 FM — Producido para <span class="text-yellow-400 font-bold">Theos Logos</span>
+            Pequeños Exploradores Shock &copy; Shock 99.5 FM — Producido para <span class="text-yellow-400 font-bold">Theos Logos</span>
         </footer>
 
     </div>
 
-    <!-- MODAL TROFEO FINAL -->
-    <div id="trophy-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden z-50">
-        <div class="max-w-md w-full glass-card rounded-3xl p-5 sm:p-8 text-center border-2 border-yellow-400/80 shadow-[0_0_80px_rgba(255,215,0,0.6)] relative overflow-hidden">
-            <div class="relative z-10 flex flex-col items-center">
-                <div class="inline-block p-3 sm:p-4 rounded-full bg-yellow-500/10 border-2 border-yellow-400/50 mb-2 animate-bounce">
-                    <i class="fa-solid fa-trophy text-4xl sm:text-5xl text-yellow-400"></i>
-                </div>
-
-                <h3 class="text-amber-200 text-[10px] sm:text-xs uppercase font-extrabold tracking-widest mb-1">¡VICTORIA TOTAL EN EL MONTE SINAÍ!</h3>
-                <h2 class="text-xl sm:text-2xl font-bold text-white mb-2 font-cinzel">40 Estrellas Conquistadas</h2>
-
-                <div id="trophy-logo-container" class="my-3 p-3 w-full rounded-2xl bg-black/80 border border-yellow-500/40 flex items-center justify-center min-h-[90px]">
-                    <img src="theos.png" alt="Theos Logos" class="max-h-20 sm:max-h-28 object-contain" onError="renderFallbackTheosLogo('trophy-logo-container');">
-                </div>
-
-                <p class="text-stone-300 text-xs sm:text-sm mb-4 leading-relaxed">
-                    ¡Has superado victoriosamente los <span class="text-yellow-300 font-bold">40 niveles completos</span> de la Biblia!
-                </p>
-
-                <div class="w-full space-y-2">
-                    <button onclick="resetAndPlayAgain()" class="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-black font-black uppercase text-xs shadow-lg">
-                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Reiniciar y Jugar de Nuevo
-                    </button>
-                    <button onclick="closeTrophyModal()" class="w-full py-2.5 px-5 rounded-xl bg-stone-900 text-amber-300 font-bold text-xs border border-amber-500/30">
-                        <i class="fa-solid fa-eye mr-1.5"></i> Ver Mapa de Niveles
-                    </button>
-                </div>
+    <!-- MODAL DE PASAJE BÍBLICO AL COMPLETAR CADA NIVEL -->
+    <div id="bible-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden z-50">
+        <div class="max-w-md w-full glass-card rounded-3xl p-6 text-center border-2 border-amber-400/80 shadow-[0_0_60px_rgba(245,158,11,0.6)] flex flex-col items-center">
+            
+            <div class="p-3 rounded-full bg-amber-500/20 border border-amber-400/50 mb-3">
+                <i class="fa-solid fa-book-bible text-4xl text-amber-300"></i>
             </div>
+
+            <h3 id="bible-redil-title" class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-1">¡NIVEL COMPLETADO!</h3>
+            <h2 class="text-xl font-bold text-white font-cinzel mb-3">El Dios que nos Rescata</h2>
+
+            <div class="bg-black/60 p-4 rounded-2xl border border-amber-500/30 mb-4 text-left w-full">
+                <p id="bible-verse" class="text-xs sm:text-sm text-yellow-200 font-semibold italic mb-2 leading-relaxed"></p>
+                <p id="bible-explanation" class="text-[11px] sm:text-xs text-stone-300 leading-relaxed"></p>
+            </div>
+
+            <button id="close-bible-btn" onclick="closeBibleModalAndContinue()" disabled class="w-full py-3 rounded-xl bg-stone-700 text-stone-400 font-black uppercase text-xs shadow-lg transition opacity-50 cursor-not-allowed">
+                <i class="fa-solid fa-volume-high mr-1.5 animate-pulse"></i> Escuchando Reflexión...
+            </button>
         </div>
     </div>
 
-    <!-- SCRIPT PRINCIPAL -->
+    <!-- TROPHY MODAL FINAL (100 OVEJAS EN NIVEL 40) -->
+    <div id="trophy-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden z-50">
+        <div class="max-w-md w-full glass-card rounded-3xl p-6 text-center border-2 border-yellow-400/80 shadow-[0_0_80px_rgba(255,215,0,0.6)] flex flex-col items-center">
+            <div class="inline-block p-4 rounded-full bg-yellow-500/10 border-2 border-yellow-400/50 mb-2 animate-bounce">
+                <i class="fa-solid fa-trophy text-5xl text-yellow-400"></i>
+            </div>
+            <h3 class="text-amber-200 text-xs font-bold tracking-widest uppercase">¡MISIÓN CUMPLIDA!</h3>
+            <h2 class="text-2xl font-bold text-white font-cinzel mb-2">100 Ovejas Rescatadas</h2>
+            
+            <div id="trophy-logo-container" class="my-3 p-3 w-full rounded-2xl bg-black/80 border border-yellow-500/40 flex items-center justify-center">
+                <img src="theos.png" alt="Theos Logos" class="max-h-24 object-contain" onError="renderFallbackTheosLogo('trophy-logo-container');">
+            </div>
+
+            <p class="text-xs sm:text-sm text-stone-300 mb-4 leading-relaxed">
+                ¡Has superado victoriosamente los 40 niveles y rescatado a las 100 ovejas perdidas llevándolas al Redil Protegido de Dios!
+            </p>
+
+            <button onclick="resetAndPlayAgain()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black uppercase text-xs shadow-lg">
+                <i class="fa-solid fa-rotate-right mr-1.5"></i> Volver a Jugar
+            </button>
+        </div>
+    </div>
+
     <script>
-        function renderFallbackShockLogo(containerId) {
+        // 40 PASAJES BÍBLICOS ÚNICOS SOBRE EL AMOR Y RESCATE DE DIOS
+        const bibleVersesDB = [
+            { verse: '"Porque el Hijo del Hombre vino a buscar y a salvar lo que se había perdido." — Lucas 19:10', explanation: "Explicación: Jesús vino a buscarnos con un amor inagotable para rescatarnos de todo peligro." },
+            { verse: '"Yo soy el buen pastor; el buen pastor su vida da por las ovejas." — Juan 10:11', explanation: "Explicación: Jesús cuida de nosotros de manera única y entrego su vida por nuestra protección." },
+            { verse: '"Jehová es mi pastor; nada me faltará." — Salmos 23:1', explanation: "Explicación: Al confiar en Dios como nuestro Guía, Él suplirá todo lo que necesitamos en paz." },
+            { verse: '"¿Qué hombre de vosotros, teniendo cien ovejas, si pierde una de ellas, no va tras la que se perdió?" — Lucas 15:4', explanation: "Explicación: Cada persona es infinitamente valiosa para Dios, Él nunca te dejará olvidado." },
+            { verse: '"Habrá más gozo en el cielo por un pecador que se arrepiente..." — Lucas 15:7', explanation: "Explicación: El cielo celebra con gran alegría cada vez que alguien vuelve a los brazos de Dios." },
+            { verse: '"Erais como ovejas descarriadas, pero ahora habéis vuelto al Pastor de vuestras almas." — 1 Pedro 2:25', explanation: "Explicación: Aunque nos desviemos, la gracia de Dios siempre está lista para traernos de vuelta." },
+            { verse: '"Mis ovejas oyen mi voz, y yo las conozco, y me siguen." — Juan 10:27', explanation: "Explicación: Escuchar y seguir la voz de Dios nos libra de caer en las trampas del enemigo." },
+            { verse: '"Y les doy vida eterna; y no perecerán jamás, ni nadie las arrebatará de mi mano." — Juan 10:28', explanation: "Explicación: Nada en el mundo puede separarte de la poderosa mano protectora del Señor." },
+            { verse: '"Todos nosotros nos descarriamos como ovejas; mas Jehová cargó en él el pecado de todos." — Isaías 53:6', explanation: "Explicación: Jesús tomó nuestras cargas para abrirnos camino seguro a la vida eterna." },
+            { verse: '"Como pastor apacentará su rebaño; en su brazo llevará los corderos." — Isaías 40:11', explanation: "Explicación: Dios trata a los más pequeños y vulnerables con extrema ternura y cariño." },
+            { verse: '"Yo buscaré la perdida, y haré volver la amedrentada; vendaré la perniquebrada." — Ezequiel 34:16', explanation: "Explicación: Dios restaura nuestros corazones lastimados y nos llena de nueva fortaleza." },
+            { verse: '"Cerca está Jehová de los quebrantados de corazón; y salva a los contritos de espíritu." — Salmos 34:18', explanation: "Explicación: Cuando enfrentas momentos difíciles, la reconfortante presencia de Dios te abraza." },
+            { verse: '"Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar." — Mateo 11:28', explanation: "Explicación: Entrega tus angustias a Dios; Él te dará el verdadero descanso del alma." },
+            { verse: '"Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito." — Juan 3:16', explanation: "Explicación: El amor de Dios es el regalo rescate más grandioso de la historia." },
+            { verse: '"Si Dios es por nosotros, ¿quién contra nosotros?" — Romanos 8:31', explanation: "Explicación: Caminando con Dios a nuestro lado no hay gigante ni peligro que nos pueda vencer." },
+            { verse: '"Mas Dios muestra su amor para con nosotros, en que siendo aún pecadores, Cristo murió por nosotros." — Romanos 5:8', explanation: "Explicación: El amor de Dios es incondicional; Él nos amó desde antes de que le conociéramos." },
+            { verse: '"Ciertamente el bien y la misericordia me seguirán todos los días de mi vida." — Salmos 23:6', explanation: "Explicación: La bondad y fidelidad del Señor acompañan cada uno de tus pasos." },
+            { verse: '"El Señor es mi luz y mi salvación; ¿de quién temeré?" — Salmos 27:1', explanation: "Explicación: La luz celestial de Dios disipa toda oscuridad y ahuyenta cualquier temor." },
+            { verse: '"Clama a mí, y yo te responderé, y te enseñaré cosas grandes y ocultas." — Jeremías 33:3', explanation: "Explicación: Dios escucha cada oracion y te revelará sus maravillosos propósitos." },
+            { verse: '"Torre fuerte es el nombre de Jehová; a él correrá el justo, y será levantado." — Proverbios 18:10', explanation: "Explicación: El nombre del Señor es un refugio inexpugnable donde siempre estarás seguro." },
+            { verse: '"El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente." — Salmos 91:1', explanation: "Explicación: Vivir cerca de Dios nos mantiene bajo su sombra protectora a cada instante." },
+            { verse: '"En el día que temo, yo en ti confío." — Salmos 56:3', explanation: "Explicación: La fe firme en Dios es el mejor escudo para superar momentos de incertidumbre." },
+            { verse: '"Guárdame como a la niña de tus ojos; escóndeme bajo la sombra de tus alas." — Salmos 17:8', explanation: "Explicación: Para Dios eres su tesoro más preciado y te protege con delgadez absoluta." },
+            { verse: '"Gracia y paz os sean multiplicadas en el conocimiento de Dios." — 2 Pedro 1:2', explanation: "Explicación: Entre más conocemos a Dios, más abundan la gracia y la tranquilidad en nuestro corazón." },
+            { verse: '"Y el mismo Dios de paz os santifique por completo; y todo vuestro ser sea guardado." — 1 Tesalonicenses 5:23', explanation: "Explicación: Dios te sostiene y guarda todo tu ser limpio y protegido." },
+            { verse: '"Jehová te guardará de todo mal; él guardará tu alma." — Salmos 121:7', explanation: "Explicación: Dios vela por ti de noche y de día librándote de todo mal." },
+            { verse: '"Jehová guardará tu salida y tu entrada desde ahora y para siempre." — Salmos 121:8', explanation: "Explicación: Cada viaje o paso que des está bajo la atenta mirada de tu Creador." },
+            { verse: '"Buscad a Jehová mientras puede ser hallado, llamadle en tanto que está cercano." — Isaías 55:6', explanation: "Explicación: Buscar a Dios hoy es la mejor decisión que podemos tomar en nuestra juventud." },
+            { verse: '"Instruye al niño en su camino, y aun cuando fuere viejo no se apartará de él." — Proverbios 22:6', explanation: "Explicación: Aprender las enseñas bíblicas desde pequeños nos da sabiduría para toda la vida." },
+            { verse: '"Lámpara es a mis pies tu palabra, y lumbrera a mi camino." — Salmos 119:105', explanation: "Explicación: La Palabra de Dios nos alumbra para tomar siempre decisiones correctas." },
+            { verse: '"Todo lo puedo en Cristo que me fortalece." — Filipenses 4:13', explanation: "Explicación: Con la fuerza que Cristo te da, no existen metas inalcanzables." },
+            { verse: '"No temas, porque yo estoy contigo; no desmayes, porque yo soy tu Dios." — Isaías 41:10', explanation: "Explicación: Dios te toma de la mano derecha y te sostiene en todo momento." },
+            { verse: '"El amor es sufrido, es benigno; el amor no tiene envidia." — 1 Corintios 13:4', explanation: "Explicación: El amor de Dios nos enseña a tratar a todos con bondad y respeto." },
+            { verse: '"Amarás al Señor tu Dios con todo tu corazón, y a tu prójimo como a ti mismo." — Mateo 22:37-39', explanation: "Explicación: Amar a Dios y ayudar a nuestro prójimo son las bases de una vida feliz." },
+            { verse: '"Bienaventurados los de limpio corazón, porque ellos verán a Dios." — Mateo 5:8', explanation: "Explicación: Mantener intenciones puras nos acerca cada día más a la presencia de Dios." },
+            { verse: '"Porque donde están dos o tres congregados en mi nombre, allí estoy yo en medio de ellos." — Mateo 18:20', explanation: "Explicación: Cuando nos unimos a buscar a Dios, su gloriosa presencia llena el lugar." },
+            { verse: '"Someteos, pues, a Dios; resistid al diablo, y huirá de vosotros." — Santiago 4:7', explanation: "Explicación: Obedecer a Dios nos hace victoriosos frente a cualquier tentación." },
+            { verse: '"El Señor no retarda su promesa, según algunos la tienen por tardanza..." — 2 Pedro 3:9', explanation: "Explicación: Las promesas de Dios siempre se cumplen en su tiempo perfecto." },
+            { verse: '"He aquí, yo estoy a la puerta y llamo; si alguno oye mi voz y abre la puerta, entraré a él." — Apocalipsis 3:20', explanation: "Explicación: Jesús toca la puerta de nuestro corazón para darnos vida y bendición." },
+            { verse: '"Y el Espíritu y la Esposa dicen: Ven. Y el que oye, diga: Ven." — Apocalipsis 22:17', explanation: "Explicación: Dios nos invita a disfrutar libremente de las aguas de la vida eterna." }
+        ];
+
+        function renderFallbackShockLogo(containerId, height = 48) {
             const container = document.getElementById(containerId);
             if (!container) return;
             container.innerHTML = `
@@ -326,86 +382,90 @@
             `;
         }
 
-        // PREGUNTAS CON CITA Y TEXTO BÍBLICO NARRADO (40 EN TOTAL: 20 ANTIGUO TESTAMENTO, 20 NUEVO TESTAMENTO)
-        const baseQuestionsAT = [
-            { question: "¿En qué monte Dios entregó los Diez Mandamientos a Moisés?", options: ["Monte Carmelo", "Monte Sinaí", "Monte Nebo", "Monte de los Olivos"], correct: 1, verse: "Éxodo 19:20", verseText: "Y descendió Jehová sobre el monte Sinaí, sobre la cumbre del monte; y llamó Jehová a Moisés a la cumbre del monte, y Moisés subió." },
-            { question: "¿Quién construyó el Arca por mandato de Dios para salvar a su familia del Diluvio?", options: ["Abraham", "Noé", "Jacob", "Isaac"], correct: 1, verse: "Génesis 6:14", verseText: "Hazte un arca de madera de gofer; harás compartimentos en el arca, y la calafatearás con brea por dentro y por fuera." },
-            { question: "¿Qué profeta fue lanzado al foso de los leones y sobrevivió milagrosamente?", options: ["Isaías", "Jeremías", "Daniel", "Ezequiel"], correct: 2, verse: "Daniel 6:22", verseText: "Mi Dios envió su ángel, el cual cerró la boca de los leones, para que no me hiciesen daño." },
-            { question: "¿Qué rey de Israel era famoso por su gran sabiduría y edificar el Templo?", options: ["David", "Saúl", "Salomón", "Ezequías"], correct: 2, verse: "1 Reyes 4:29", verseText: "Y Dios dio a Salomón sabiduría y prudencia muy grandes, y anchura de corazón como la arena que está a la orilla del mar." },
-            { question: "¿Qué mar fue dividido para que el pueblo de Israel cruzara en seco?", options: ["Mar Muerto", "Mar Rojo", "Mar de Galilea", "Mar Mediterráneo"], correct: 1, verse: "Éxodo 14:21-22", verseText: "Y extendió Moisés su mano sobre el mar... y los hijos de Israel entraron por en medio del mar, en seco." },
-            { question: "¿Quién derrotó a Goliat usando únicamente una honda y una piedra?", options: ["Sansón", "David", "Gedeón", "Josué"], correct: 1, verse: "1 Samuel 17:50", verseText: "Así venció David al filisteo con honda y piedra; e hirió al filisteo y lo mató, sin tener David espada en su mano." },
-            { question: "¿Quién fue el primer hombre creado por Dios según el Génesis?", options: ["Adán", "Abel", "Seth", "Enoc"], correct: 0, verse: "Génesis 2:7", verseText: "Entonces Jehová Dios formó al hombre del polvo de la tierra, y sopló en su nariz aliento de vida, y fue el hombre un ser viviente." },
-            { question: "¿Qué mujer se convirtió en estatua de sal por mirar atrás a Sodoma?", options: ["La esposa de Lot", "Sara", "Rebeca", "Raquel"], correct: 0, verse: "Génesis 19:26", verseText: "Entonces la mujer de Lot miró atrás, a espaldas de él, y se volvió estatua de sal." },
-            { question: "¿Quién fue vendido como esclavo por sus hermanos y llegó a ser gobernador de Egipto?", options: ["Moisés", "José", "Benjamín", "Judá"], correct: 1, verse: "Génesis 41:41", verseText: "Dijo también Faraón a José: He aquí yo te he puesto sobre toda la tierra de Egipto." },
-            { question: "¿Qué profeta hizo descender fuego del cielo en el Monte Carmelo?", options: ["Eliseo", "Elías", "Samuel", "Oseas"], correct: 1, verse: "1 Reyes 18:38", verseText: "Entonces cayó fuego de Jehová, y consumió el holocausto, la leña, las piedras y el polvo." },
-            { question: "¿Cuáles fueron las murallas que cayeron tras dar rodeos durante siete días?", options: ["Jerusalén", "Jericó", "Babilonia", "Nínive"], correct: 1, verse: "Josué 6:20", verseText: "El pueblo gritó, y los sacerdotes tocaron las trompetas... y el muro se derrumbó." },
-            { question: "¿Qué hombre se caracterizaba por su fuerza extrema vinculada a su voto nazareo?", options: ["Gedeón", "Sansón", "Booz", "Jefté"], correct: 1, verse: "Jueces 16:17", verseText: "Nunca a mi cabeza llegó navaja, porque soy nazareo de Dios desde el vientre de mi madre." },
-            { question: "¿Quién fue tragado por un gran pez tras desobedecer la orden de ir a Nínive?", options: ["Jonás", "Nahúm", "Habacuc", "Sofonías"], correct: 0, verse: "Jonás 1:17", verseText: "Pero Jehová tenía preparado un gran pez que tragase a Jonás; y estuvo Jonás en el vientre del pez tres días y tres noches." },
-            { question: "¿Qué patriarca estuvo dispuesto a ofrecer a su hijo Isaac en el monte Moriah?", options: ["Jacob", "Abraham", "Isaac", "Noé"], correct: 1, verse: "Génesis 22:10", verseText: "Y extendió Abraham su mano y tomó el cuchillo para degollar a su hijo." },
-            { question: "¿Quién interpretó los sueños del faraón sobre las vacas flacas y las vacas gordas?", options: ["Moisés", "Aarón", "José", "Daniel"], correct: 2, verse: "Génesis 41:25", verseText: "Entonces respondió José a Faraón: El sueño de Faraón es uno mismo; Dios ha mostrado a Faraón lo que va a hacer." },
-            { question: "¿Qué reina visitó al rey Salomón asombrada por su gran sabiduría?", options: ["Reina Ester", "Reina de Sabá", "Reina Vasthi", "Jezabel"], correct: 1, verse: "1 Reyes 10:1", verseText: "Oyendo la reina de Sabá la fama de Salomón... vino a probarle con preguntas difíciles." },
-            { question: "¿Quién fue la mujer valiente que rescató al pueblo judío siendo reina de Persia?", options: ["Rut", "Ester", "Noemí", "Debora"], correct: 1, verse: "Ester 4:14", verseText: "¿Y quién sabe si para esta hora has llegado al reino?" },
-            { question: "¿Qué joven pastor ungido por Samuel se convirtió en el segundo rey de Israel?", options: ["Saúl", "Salomón", "David", "Absalón"], correct: 2, verse: "1 Samuel 16:13", verseText: "Y Samuel tomó el cuerno del aceite, y unió-le en medio de sus hermanos; y desde aquel día el Espíritu de Jehová vino sobre David." },
-            { question: "¿Qué hombre justo perdió todo en una prueba pero mantuvo su fidelidad a Dios?", options: ["Job", "Abraham", "Lot", "Matusalén"], correct: 0, verse: "Job 1:21", verseText: "Jehová dio, y Jehová quitó; sea el nombre de Jehová bendito." },
-            { question: "¿Cómo se llamaba la suegra de Rut que regresó amargada a Belén?", options: ["Orfa", "Noemí", "Mara", "Abigail"], correct: 1, verse: "Rut 1:20", verseText: "Y ella les respondía: No me llaméis Noemí, sino llamadme Mara; porque en grande amargura me ha puesto el Todopoderoso." }
-        ];
+        // VECTORS SVG INTERACTIVOS
+        const sheepSVG = `
+            <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
+                <ellipse cx="50" cy="55" rx="28" ry="20" fill="#ffffff" />
+                <circle cx="34" cy="45" r="10" fill="#f1f5f9" />
+                <circle cx="66" cy="45" r="10" fill="#f1f5f9" />
+                <circle cx="50" cy="38" r="12" fill="#ffffff" />
+                <ellipse cx="50" cy="50" rx="12" ry="10" fill="#334155" />
+                <circle cx="46" cy="48" r="2" fill="#ffffff" />
+                <circle cx="54" cy="48" r="2" fill="#ffffff" />
+                <rect x="38" y="70" width="5" height="12" rx="2" fill="#1e293b" />
+                <rect x="57" y="70" width="5" height="12" rx="2" fill="#1e293b" />
+            </svg>
+        `;
 
-        const baseQuestionsNT = [
-            { question: "¿En qué ciudad nació Jesucristo conforme a las profecías?", options: ["Nazaret", "Jerusalén", "Belén", "Jericó"], correct: 2, verse: "Mateo 2:1", verseText: "Cuando Jesús nació en Belén de Judea en días del rey Herodes, vinieron del oriente a Jerusalén unos magos." },
-            { question: "¿Cuál de estos apóstoles caminó brevemente sobre el agua hacia Jesús?", options: ["Pedro", "Juan", "Santiago", "Andrés"], correct: 0, verse: "Mateo 14:29", verseText: "Y descendiendo Pedro de la barca, caminaba sobre las aguas para ir a Jesús." },
-            { question: "¿Cuál fue el primer milagro público de Jesús registrado en Canaán?", options: ["Multiplicar panes", "Sanar ciego", "Convertir agua en vino", "Resucitar a Lázaro"], correct: 2, verse: "Juan 2:11", verseText: "Este principio de señales hizo Jesús en Caná de Galilea, y manifestó su gloria; y sus discípulos creyeron en él." },
-            { question: "¿Quién fue conocido como Saulo de Tarso antes de su conversión?", options: ["Pablo", "Bernabé", "Esteban", "Mateo"], correct: 0, verse: "Hechos 13:9", verseText: "Entonces Saulo, que también es Pablo, lleno del Espíritu Santo, fijando en él los ojos..." },
-            { question: "¿Cuál es el último libro profético del Nuevo Testamento escrito por Juan?", options: ["Hechos", "Romanos", "Hebreos", "Apocalipsis"], correct: 3, verse: "Apocalipsis 1:1", verseText: "La revelación de Jesucristo, que Dios le dio, para manifestar a sus siervos las cosas que deben suceder pronto." },
-            { question: "¿Quién bautizó a Jesús en el Río Jordán?", options: ["Juan el Bautista", "Pedro", "Felipe", "Nicodemo"], correct: 0, verse: "Mateo 3:13", verseText: "Entonces Jesús vino de Galilea a Juan al Jordán, para ser bautizado por él." },
-            { question: "¿Quién fue el discípulo que traicionó a Jesús por treinta piezas de plata?", options: ["Pedro", "Judas Iscariote", "Tomás", "Mateo"], correct: 1, verse: "Mateo 26:15", verseText: "Y les dijo: ¿Qué me queréis dar, y yo os lo entregarán? Y ellos le señalaron treinta piezas de plata." },
-            { question: "¿Qué monte fue el escenario del histórico Sermón del Monte dado por Jesús?", options: ["Monte Sinaí", "Monte de las Bienaventuranzas", "Monte Tabor", "Monte Calvario"], correct: 1, verse: "Mateo 5:1-2", verseText: "Viendo la multitud, subió al monte... y abriendo su boca les enseñaba." },
-            { question: "¿Cuál de los discípulos dudó inicialmente de la resurrección de Jesús hasta verle?", options: ["Andrés", "Tomás", "Felipe", "Bartolomé"], correct: 1, verse: "Juan 20:25", verseText: "Si no viere en sus manos la señal de los clavos... no creeré." },
-            { question: "¿Qué día de la semana resucitó Jesucristo victorioso de entre los muertos?", options: ["Sábado", "Domingo (Primer día)", "Viernes", "Lunes"], correct: 1, verse: "Lucas 24:1", verseText: "El primer día de la semana, muy de mañana, vinieron al sepulcro trayendo las especias aromáticas..." },
-            { question: "¿Quién fue el joven diácono que se convirtió en el primer mártir cristiano?", options: ["Esteban", "Felipe", "Timoteo", "Bernabé"], correct: 0, verse: "Hechos 7:59", verseText: "Y apedreaban a Esteban, mientras él invocaba y decía: Señor Jesús, recibe mi espíritu." },
-            { question: "¿En qué fiesta hebrea descendió el Espíritu Santo sobre los creyentes en forma de fuego?", options: ["Pascua", "Pentecostés", "Tabernáculos", "Dedicación"], correct: 1, verse: "Hechos 2:1-4", verseText: "Cuando llegó el día de Pentecostés, estaban todos unánimes juntos... y fueron todos llenos del Espíritu Santo." },
-            { question: "¿Qué apóstol escribió la mayoría de las epístolas del Nuevo Testamento?", options: ["Pedro", "Juan", "Pablo", "Santiago"], correct: 2, verse: "2 Pedro 3:15", verseText: "Como también nuestro amado hermano Pablo, según la sabiduría que le ha sido dada, os ha escrito..." },
-            { question: "¿Qué oficial romano fue el primer gentil en bautizarse junto a su familia?", options: ["Cornelio", "Pilato", "César", "Felix"], correct: 0, verse: "Hechos 10:48", verseText: "Y mandó bautizarles en el nombre del Señor Jesús." },
-            { question: "¿En qué isla estuvo confinado el apóstol Juan cuando recibió el Apocalipsis?", options: ["Creta", "Patmos", "Chipre", "Sicilia"], correct: 1, verse: "Apocalipsis 1:9", verseText: "Yo Juan, vuestro hermano... estaba en la isla llamada Patmos, por causa de la palabra de Dios." },
-            { question: "¿Quién era el fariseo miembro del sanedrín que visitó a Jesús de noche?", options: ["Nicodemo", "Gamaliel", "Caifás", "Anás"], correct: 0, verse: "Juan 3:1-2", verseText: "Había un hombre de los fariseos que se llamaba Nicodemo, príncipe de los judíos. Este vino a Jesús de noche..." },
-            { question: "¿Cuál es el capítulo de la Biblia conocido como el capítulo del amor?", options: ["Salmos 23", "1 Corintios 13", "Romanos 8", "Juan 3"], correct: 1, verse: "1 Corintios 13:4", verseText: "El amor es sufrido, es benigno; el amor no tiene envidia, el amor no es jactancioso, no se envanece." },
-            { question: "¿Qué pareja mintió sobre una ofrenda y falleció instantáneamente ante Pedro?", options: ["Aquila y Priscila", "Ananías y Safira", "Zacarías y Elisabet", "Adán y Eva"], correct: 1, verse: "Hechos 5:5", verseText: "Al oír Ananías estas palabras, cayó y expiró. Y vino un gran temor sobre todos los que lo oyeron." },
-            { question: "¿Qué milagro realizó Jesús en las bodas de Caná convirtiendo el agua?", options: ["En aceite", "En vino", "En leche", "En miel"], correct: 1, verse: "Juan 2:9", verseText: "Cuando el maestresazala probó el agua hecha vino... llamó al esposo." },
-            { question: "¿Cuál es el libro que sigue inmediatamente después de los Hechos de los Apóstoles?", options: ["1 Corintios", "Romanos", "Gálatas", "Efesios"], correct: 1, verse: "Romanos 1:1", verseText: "Pablo, siervo de Jesucristo, llamado a ser apóstol, apartado para el evangelio de Dios." }
-        ];
+        const goatSVG = `
+            <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
+                <path d="M 36 28 Q 20 5 15 15 Q 26 22 36 34 Z" fill="#b45309" />
+                <path d="M 64 28 Q 80 5 85 15 Q 74 22 64 34 Z" fill="#b45309" />
+                <ellipse cx="50" cy="52" rx="18" ry="22" fill="#d97706" />
+                <ellipse cx="50" cy="42" rx="10" ry="12" fill="#f59e0b" />
+                <circle cx="45" cy="40" r="2" fill="#000" />
+                <circle cx="55" cy="40" r="2" fill="#000" />
+                <polygon points="50,62 44,78 56,78" fill="#fef3c7" />
+                <rect x="42" y="72" width="4" height="14" fill="#78350f" />
+                <rect x="54" y="72" width="4" height="14" fill="#78350f" />
+            </svg>
+        `;
 
-        const questionsDB = [];
-        for (let i = 0; i < 20; i++) {
-            const base = baseQuestionsAT[i];
-            questionsDB.push({
-                testament: "Antiguo Testamento",
-                groupNum: Math.floor(i / 4) + 1,
-                levelNum: i + 1,
-                question: `${i + 1}. ${base.question}`,
-                options: base.options,
-                correct: base.correct,
-                verse: base.verse,
-                verseText: base.verseText
-            });
+        const lionSilhouetteSVG = `
+            <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-12 sm:h-12 filter drop-shadow-[0_2px_4px_rgba(255,255,255,0.3)]">
+                <circle cx="50" cy="40" r="22" fill="#000000" />
+                <circle cx="50" cy="42" r="14" fill="#050505" />
+                <ellipse cx="50" cy="65" rx="18" ry="20" fill="#000000" />
+                <path d="M 32 30 Q 20 20 30 10 Z" fill="#000000" />
+                <path d="M 68 30 Q 80 20 70 10 Z" fill="#000000" />
+                <rect x="38" y="80" width="6" height="15" rx="2" fill="#000000" />
+                <rect x="56" y="80" width="6" height="15" rx="2" fill="#000000" />
+            </svg>
+        `;
+
+        const wolfSilhouetteSVG = `
+            <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-12 sm:h-12 filter drop-shadow-[0_2px_4px_rgba(255,255,255,0.3)]">
+                <polygon points="50,15 30,45 70,45" fill="#000000" />
+                <polygon points="32,25 20,5 38,18" fill="#000000" />
+                <polygon points="68,25 80,5 62,18" fill="#000000" />
+                <ellipse cx="50" cy="60" rx="16" ry="22" fill="#000000" />
+                <rect x="40" y="78" width="5" height="16" rx="2" fill="#000000" />
+                <rect x="55" y="78" width="5" height="16" rx="2" fill="#000000" />
+            </svg>
+        `;
+
+        const snakeSilhouetteSVG = `
+            <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-12 sm:h-12 filter drop-shadow-[0_2px_4px_rgba(255,255,255,0.3)]">
+                <path d="M 20 70 Q 40 90 50 70 T 80 70 T 50 30 T 30 20" fill="none" stroke="#000000" stroke-width="12" stroke-linecap="round" />
+                <circle cx="30" cy="20" r="10" fill="#000000" />
+            </svg>
+        `;
+
+        const mountainSilhouetteSVG = `
+            <svg viewBox="0 0 100 100" class="w-12 h-12 sm:w-14 sm:h-14 filter drop-shadow-[0_2px_4px_rgba(255,255,255,0.2)]">
+                <polygon points="50,15 10,85 90,85" fill="#000000" />
+                <polygon points="70,35 45,85 95,85" fill="#111111" />
+            </svg>
+        `;
+
+        const rockSilhouetteSVG = `
+            <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-12 sm:h-12 filter drop-shadow-[0_2px_4px_rgba(255,255,255,0.2)]">
+                <path d="M 20 70 L 30 40 L 60 30 L 85 50 L 75 80 L 30 85 Z" fill="#000000" />
+            </svg>
+        `;
+
+        const sheepPerLevelArr = [];
+        for (let lvl = 0; lvl < 40; lvl++) {
+            sheepPerLevelArr.push(lvl % 2 === 0 ? 2 : 3);
         }
-        for (let i = 0; i < 20; i++) {
-            const base = baseQuestionsNT[i];
-            questionsDB.push({
-                testament: "Nuevo Testamento",
-                groupNum: Math.floor((i + 20) / 4) + 1,
-                levelNum: i + 21,
-                question: `${i + 21}. ${base.question}`,
-                options: base.options,
-                correct: base.correct,
-                verse: base.verse,
-                verseText: base.verseText
-            });
-        }
 
-        let currentIndex = 0;
+        let currentLevel = 0;
         let maxUnlockedLevel = 0;
         let completedLevels = new Set();
+        let totalRescuedSheepCount = 0;
+        let levelRemainingSheep = 0;
+        let lostSheepIndexes = [];
         let isAudioEnabled = true;
-        let isAnsweringBlocked = false;
         let bestVoice = null;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -429,7 +489,7 @@
             speakText(fullNarrative, () => {
                 startBtn.disabled = false;
                 startBtn.className = "flex-1 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black font-black uppercase text-xs shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer";
-                startBtn.innerHTML = `<i class="fa-solid fa-play"></i> ¡Iniciar Desafío!`;
+                startBtn.innerHTML = `<i class="fa-solid fa-play"></i> ¡Comenzar la Aventura!`;
             });
         }
 
@@ -443,53 +503,289 @@
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             document.getElementById('narrative-overlay').style.display = 'none';
             loadSavedProgress();
-            renderLevelGrid();
-            renderQuestion();
+            renderLevelsList();
+            renderRescuedFold();
+            loadLevel();
         }
 
         function loadSavedProgress() {
             try {
-                const savedMax = localStorage.getItem('sinai_40_max');
-                const savedCompleted = localStorage.getItem('sinai_40_completed');
+                const savedMax = localStorage.getItem('exploradores_40_max');
+                const savedCompleted = localStorage.getItem('exploradores_40_completed');
+                const savedSheep = localStorage.getItem('exploradores_40_sheep');
+
                 if (savedMax !== null) maxUnlockedLevel = parseInt(savedMax, 10);
                 if (savedCompleted !== null) completedLevels = new Set(JSON.parse(savedCompleted));
+                if (savedSheep !== null) totalRescuedSheepCount = parseInt(savedSheep, 10);
             } catch(e) {}
-            updateHUDScore();
+            updateHUD();
         }
 
         function saveProgress() {
             try {
-                localStorage.setItem('sinai_40_max', maxUnlockedLevel);
-                localStorage.setItem('sinai_40_completed', JSON.stringify(Array.from(completedLevels)));
+                localStorage.setItem('exploradores_40_max', maxUnlockedLevel);
+                localStorage.setItem('exploradores_40_completed', JSON.stringify(Array.from(completedLevels)));
+                localStorage.setItem('exploradores_40_sheep', totalRescuedSheepCount);
             } catch(e) {}
         }
 
-        function updateHUDScore() {
-            document.getElementById('star-score-hud').innerText = `${completedLevels.size} / 40`;
+        function updateHUD() {
+            document.getElementById('star-score-hud').innerText = `${totalRescuedSheepCount} / 100`;
+            document.getElementById('rescued-count').innerText = `${totalRescuedSheepCount} / 100`;
+            document.getElementById('redil-badge').innerText = `Nivel ${currentLevel + 1} de 40`;
         }
 
-        function confirmReset() {
-            if (confirm("¿Seguro que deseas borrar todo tu progreso y volver al Nivel 1?")) {
-                resetAndPlayAgain();
+        function renderRescuedFold() {
+            const fold = document.getElementById('rescued-fold');
+            if (!fold) return;
+            fold.innerHTML = '';
+            for (let i = 0; i < totalRescuedSheepCount; i++) {
+                const s = document.createElement('div');
+                s.className = 'p-0.5 animate-pulse';
+                s.innerHTML = sheepSVG;
+                fold.appendChild(s);
             }
         }
 
-        function resetAndPlayAgain() {
-            try {
-                localStorage.removeItem('sinai_40_max');
-                localStorage.removeItem('sinai_40_completed');
-            } catch(e) {}
-            maxUnlockedLevel = 0;
-            completedLevels.clear();
-            currentIndex = 0;
-            updateHUDScore();
-            document.getElementById('trophy-modal').classList.add('hidden');
-            renderLevelGrid();
-            renderQuestion();
+        function renderLevelsList() {
+            const container = document.getElementById('levels-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let i = 0; i < 40; i++) {
+                const btn = document.createElement('button');
+                let state = 'locked';
+                if (completedLevels.has(i)) state = 'completed';
+                else if (i === currentLevel) state = 'current';
+                else if (i <= maxUnlockedLevel) state = 'bg-stone-800 text-amber-300 border-amber-500/40';
+
+                btn.className = `level-grid-btn ${state} border h-9 rounded-xl text-xs font-bold flex items-center justify-center`;
+                btn.innerText = i + 1;
+
+                if (i <= maxUnlockedLevel) {
+                    btn.onclick = () => {
+                        currentLevel = i;
+                        renderLevelsList();
+                        loadLevel();
+                    };
+                } else {
+                    btn.disabled = true;
+                }
+
+                container.appendChild(btn);
+            }
+
+            const percent = Math.round((completedLevels.size / 40) * 100);
+            document.getElementById('progress-percent').innerText = `${percent}%`;
         }
 
-        function closeTrophyModal() {
-            document.getElementById('trophy-modal').classList.add('hidden');
+        function loadLevel() {
+            updateHUD();
+            const pasture = document.getElementById('game-pasture');
+            if (!pasture) return;
+            pasture.innerHTML = '';
+            document.getElementById('feedback-message').classList.add('hidden');
+
+            const targetSheepInLevel = sheepPerLevelArr[currentLevel];
+            levelRemainingSheep = targetSheepInLevel;
+
+            const normalSheepCount = 4 + Math.floor(currentLevel / 5);
+            const goatCount = 2 + Math.floor(currentLevel / 8);
+            const predatorCount = 2 + Math.floor(currentLevel / 10);
+            
+            lostSheepIndexes = [];
+            while (lostSheepIndexes.length < targetSheepInLevel) {
+                const randIdx = Math.floor(Math.random() * (targetSheepInLevel + normalSheepCount));
+                if (!lostSheepIndexes.includes(randIdx)) {
+                    lostSheepIndexes.push(randIdx);
+                }
+            }
+
+            const obstacleCount = 2 + Math.floor(currentLevel / 10);
+            for (let i = 0; i < obstacleCount; i++) {
+                const obs = document.createElement('div');
+                const isMountain = Math.random() > 0.5;
+                obs.className = 'obstacle';
+                obs.style.left = `${10 + Math.random() * 80}%`;
+                obs.style.top = `${10 + Math.random() * 70}%`;
+                obs.innerHTML = isMountain ? mountainSilhouetteSVG : rockSilhouetteSVG;
+                pasture.appendChild(obs);
+            }
+
+            for (let i = 0; i < targetSheepInLevel + normalSheepCount; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'animal-btn';
+                btn.style.left = `${8 + Math.random() * 80}%`;
+                btn.style.top = `${12 + Math.random() * 72}%`;
+
+                if (lostSheepIndexes.includes(i)) {
+                    btn.innerHTML = `<div class="relative">${sheepSVG}<i class="fa-solid fa-ribbon text-yellow-400 text-xs absolute -top-1 -right-1 drop-shadow-[0_0_8px_rgba(250,204,21,1)]"></i></div>`;
+                    btn.onclick = (e) => foundLostSheep(e, btn);
+                } else {
+                    btn.innerHTML = sheepSVG;
+                    btn.onclick = () => wrongAnimal('sheep');
+                }
+                pasture.appendChild(btn);
+            }
+
+            for (let i = 0; i < goatCount; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'animal-btn';
+                btn.style.left = `${8 + Math.random() * 80}%`;
+                btn.style.top = `${12 + Math.random() * 72}%`;
+                btn.innerHTML = goatSVG;
+                btn.onclick = () => wrongAnimal('goat');
+                pasture.appendChild(btn);
+            }
+
+            const predatorTypes = ['wolf', 'lion', 'snake'];
+            for (let i = 0; i < predatorCount; i++) {
+                const pType = predatorTypes[i % predatorTypes.length];
+                const btn = document.createElement('div');
+                btn.className = 'animal-btn';
+                btn.style.left = `${8 + Math.random() * 80}%`;
+                btn.style.top = `${12 + Math.random() * 72}%`;
+
+                if (pType === 'wolf') btn.innerHTML = wolfSilhouetteSVG;
+                else if (pType === 'lion') btn.innerHTML = lionSilhouetteSVG;
+                else btn.innerHTML = snakeSilhouetteSVG;
+
+                btn.onclick = () => wrongAnimal(pType);
+                pasture.appendChild(btn);
+            }
+
+            speakText(`Nivel ${currentLevel + 1}. Encuentra las ${targetSheepInLevel} ovejas perdidas con cinta dorada.`);
+        }
+
+        function wrongAnimal(type) {
+            playErrorSound();
+            if (type === 'goat') {
+                speakText("¡Esa es una cabra, no es una oveja perdida! Sigue buscando.");
+            } else if (type === 'wolf') {
+                speakText("¡Cuidado explorador, ese es un lobo feroz!");
+            } else if (type === 'lion') {
+                speakText("¡Cuidado explorador, ese es un león peligroso!");
+            } else if (type === 'snake') {
+                speakText("¡Cuidado explorador, esa es una serpiente!");
+            } else {
+                speakText("Esa es una oveja del rebaño; busca la que tiene la cinta dorada.");
+            }
+        }
+
+        function foundLostSheep(event, element) {
+            playWinSound();
+
+            const rect = event.currentTarget.getBoundingClientRect();
+            const posX = rect.left + rect.width / 2;
+            const posY = rect.top + rect.height / 2;
+
+            triggerTargetedLightningStrike(posX, posY);
+            spawnCelebrationBurst(posX, posY);
+
+            element.style.pointerEvents = 'none';
+            element.style.opacity = '0.3';
+
+            totalRescuedSheepCount++;
+            levelRemainingSheep--;
+
+            saveProgress();
+            updateHUD();
+            renderRescuedFold();
+
+            if (levelRemainingSheep > 0) {
+                document.getElementById('feedback-title').innerText = "¡OVEJA RESCATADA!";
+                document.getElementById('feedback-desc').innerText = `+1 Oveja llevada al Redil. ¡Faltan ${levelRemainingSheep} en este nivel!`;
+                document.getElementById('feedback-message').classList.remove('hidden');
+
+                speakText(`¡Excelente! Rescataste una oveja. Te faltan ${levelRemainingSheep}.`, () => {
+                    setTimeout(() => {
+                        document.getElementById('feedback-message').classList.add('hidden');
+                    }, 1000);
+                });
+            } else {
+                if (!completedLevels.has(currentLevel)) {
+                    completedLevels.add(currentLevel);
+                }
+
+                if (currentLevel + 1 > maxUnlockedLevel && currentLevel + 1 < 40) {
+                    maxUnlockedLevel = currentLevel + 1;
+                }
+
+                saveProgress();
+                renderLevelsList();
+
+                document.getElementById('feedback-title').innerText = "¡NIVEL COMPLETADO!";
+                document.getElementById('feedback-desc').innerText = "¡Todas las ovejas del nivel están a salvo!";
+                document.getElementById('feedback-message').classList.remove('hidden');
+
+                speakText("¡Grandioso! Has rescatado a todas las ovejas perdidas de este nivel.", () => {
+                    setTimeout(() => {
+                        showBibleModal();
+                    }, 1200);
+                });
+            }
+        }
+
+        function formatVerseForSpeech(verseText, explanationText) {
+            let spoken = verseText
+                .replace(/1\s+Pedro/gi, "Primera de Pedro")
+                .replace(/2\s+Pedro/gi, "Segunda de Pedro")
+                .replace(/1\s+Juan/gi, "Primera de Juan")
+                .replace(/1\s+Tesalonicenses/gi, "Primera de Tesalonicenses")
+                .replace(/(\d+):(\d+)/g, "capítulo $1, verso $2");
+
+            return `${spoken}. ${explanationText}`;
+        }
+
+        function showBibleModal() {
+            const verseData = bibleVersesDB[currentLevel % bibleVersesDB.length];
+
+            document.getElementById('bible-redil-title').innerText = `¡NIVEL ${currentLevel + 1} COMPLETADO!`;
+            document.getElementById('bible-verse').innerText = verseData.verse;
+            document.getElementById('bible-explanation').innerText = verseData.explanation;
+
+            const closeBtn = document.getElementById('close-bible-btn');
+            closeBtn.disabled = true;
+            closeBtn.className = "w-full py-3 rounded-xl bg-stone-700 text-stone-400 font-black uppercase text-xs shadow-lg transition opacity-50 cursor-not-allowed";
+            closeBtn.innerHTML = `<i class="fa-solid fa-volume-high mr-1.5 animate-pulse"></i> Escuchando Reflexión...`;
+
+            document.getElementById('bible-modal').classList.remove('hidden');
+
+            const textForSpeech = formatVerseForSpeech(verseData.verse, verseData.explanation);
+            
+            speakText(`¡Nivel ${currentLevel + 1} completado! ${textForSpeech}`, () => {
+                closeBtn.disabled = false;
+                closeBtn.className = "w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black font-black uppercase text-xs shadow-lg active:scale-95 transition cursor-pointer";
+                closeBtn.innerHTML = `<i class="fa-solid fa-arrow-right mr-1.5"></i> Continuar al Siguiente Nivel`;
+            });
+        }
+
+        function closeBibleModalAndContinue() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('bible-modal').classList.add('hidden');
+
+            if (totalRescuedSheepCount >= 100 || currentLevel === 39) {
+                document.getElementById('trophy-modal').classList.remove('hidden');
+            } else {
+                if (currentLevel < 39) currentLevel++;
+                renderLevelsList();
+                loadLevel();
+            }
+        }
+
+        function hintSheep() {
+            playWinSound();
+            speakText("¡Atención explorador! Te muestro las ovejas perdidas.");
+            const pasture = document.getElementById('game-pasture');
+            if (!pasture) return;
+            const animals = pasture.getElementsByClassName('animal-btn');
+            lostSheepIndexes.forEach(idx => {
+                if (animals[idx]) {
+                    const el = animals[idx];
+                    el.style.transform = 'scale(1.6)';
+                    setTimeout(() => el.style.transform = 'scale(1)', 900);
+                }
+            });
         }
 
         let audioCtx = null;
@@ -500,39 +796,40 @@
             } catch(e) {}
         }
 
-        function playLightningSound() {
-            try {
-                initAudio();
-                const now = audioCtx.currentTime;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(700, now);
-                osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + 0.35);
-            } catch(e) {}
-        }
-
         function playErrorSound() {
             try {
                 initAudio();
                 const now = audioCtx.currentTime;
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(140, now);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
                 osc.frequency.setValueAtTime(100, now + 0.15);
                 gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start(now);
                 osc.stop(now + 0.3);
+            } catch(e) {}
+        }
+
+        function playWinSound() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554, now + 0.1);
+                osc.frequency.setValueAtTime(659, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
             } catch(e) {}
         }
 
@@ -547,18 +844,18 @@
             window.speechSynthesis.onvoiceschanged = loadNaturalVoice;
         }
 
-        function speakText(text, onEndCallback = null) {
+        function speakText(text, callback = null) {
             if (!isAudioEnabled || !('speechSynthesis' in window)) {
-                if (onEndCallback) onEndCallback();
+                if (callback) callback();
                 return;
             }
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
             if (bestVoice) utterance.voice = bestVoice;
-            if (onEndCallback) {
-                utterance.onend = onEndCallback;
-                utterance.onerror = onEndCallback;
+            if (callback) {
+                utterance.onend = callback;
+                utterance.onerror = callback;
             }
             window.speechSynthesis.speak(utterance);
         }
@@ -570,291 +867,148 @@
             if (!isAudioEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
         }
 
-        function renderLevelGrid() {
-            const atContainer = document.getElementById('at-groups-container');
-            const ntContainer = document.getElementById('nt-groups-container');
-            if (!atContainer || !ntContainer) return;
-            atContainer.innerHTML = '';
-            ntContainer.innerHTML = '';
-
-            for (let g = 1; g <= 10; g++) {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = "bg-stone-900/60 p-2 rounded-xl border border-amber-500/20";
-                const startLvl = (g - 1) * 4;
-                const endLvl = startLvl + 3;
-
-                groupDiv.innerHTML = `
-                    <div class="text-[10px] font-bold text-amber-300 mb-1 flex justify-between items-center">
-                        <span>Grupo ${g}</span>
-                        <span class="text-[9px] text-stone-400">Niveles ${startLvl + 1} - ${endLvl + 1}</span>
-                    </div>
-                    <div class="grid grid-cols-4 gap-1.5" id="group-grid-${g}"></div>
-                `;
-
-                if (g <= 5) atContainer.appendChild(groupDiv);
-                else ntContainer.appendChild(groupDiv);
-
-                const gridEl = document.getElementById(`group-grid-${g}`);
-                for (let i = startLvl; i <= endLvl; i++) {
-                    const btn = document.createElement('button');
-                    let stateClass = 'locked';
-                    let iconHtml = `<i class="fa-solid fa-lock text-[8px] block opacity-50"></i>`;
-
-                    if (completedLevels.has(i)) {
-                        stateClass = 'completed';
-                        iconHtml = `<i class="fa-solid fa-check text-[8px] block text-emerald-200"></i>`;
-                    } else if (i === currentIndex) {
-                        stateClass = 'current';
-                        iconHtml = `<i class="fa-solid fa-play text-[8px] block"></i>`;
-                    } else if (i <= maxUnlockedLevel) {
-                        stateClass = 'unlocked bg-stone-800 text-amber-300 border-amber-500/50';
-                        iconHtml = `<i class="fa-solid fa-unlock text-[8px] block text-amber-400"></i>`;
-                    }
-
-                    btn.className = `level-btn ${stateClass} border h-8 rounded-lg flex flex-col items-center justify-center font-bold text-[11px] shadow-sm transition`;
-                    btn.innerHTML = `<span>${i + 1}</span>${iconHtml}`;
-
-                    if (i <= maxUnlockedLevel) {
-                        btn.onclick = () => {
-                            currentIndex = i;
-                            renderLevelGrid();
-                            renderQuestion();
-                        };
-                    } else {
-                        btn.disabled = true;
-                    }
-                    gridEl.appendChild(btn);
-                }
-            }
-
-            const percent = Math.round((completedLevels.size / 40) * 100);
-            document.getElementById('progress-percent').innerText = `${percent}%`;
-        }
-
-        function renderQuestion() {
-            isAnsweringBlocked = false;
-            const q = questionsDB[currentIndex];
-            const currentLevel = currentIndex + 1;
-
-            document.getElementById('testament-badge').innerHTML = `<i class="fa-solid ${currentIndex < 20 ? 'fa-scroll' : 'fa-cross'} text-amber-400"></i> ${q.testament}`;
-            document.getElementById('level-indicator').innerText = `Nivel ${currentLevel} de 40`;
-            document.getElementById('group-indicator').innerText = `Grupo ${q.groupNum} (Pregunta ${((currentLevel - 1) % 4) + 1}/4)`;
-
-            const progressPercent = (completedLevels.size / 40) * 100;
-            document.getElementById('progress-bar').style.width = `${Math.max(progressPercent, 1)}%`;
-            document.getElementById('question-text').innerText = q.question;
-
-            const feedback = document.getElementById('feedback-box');
-            feedback.className = "hidden";
-
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "option-btn w-full text-left p-3 sm:p-4 rounded-xl font-semibold text-stone-200 flex items-center justify-between text-xs sm:text-sm";
-                btn.onclick = () => handleAnswer(idx, btn);
-                btn.innerHTML = `<span>${opt}</span><span class="w-6 h-6 rounded-full border border-amber-500/30 flex items-center justify-center text-xs font-bold text-amber-400 bg-black/40">${String.fromCharCode(65 + idx)}</span>`;
-                optionsContainer.appendChild(btn);
-            });
-
-            readCurrentQuestion();
-        }
-
-        function readCurrentQuestion() {
-            const q = questionsDB[currentIndex];
-            speakText(`Nivel ${currentIndex + 1}. ${q.question}. Opción A: ${q.options[0]}. Opción B: ${q.options[1]}. Opción C: ${q.options[2]}. Opción D: ${q.options[3]}`);
-        }
-
-        function handleAnswer(selectedIndex, btnElement) {
-            if (isAnsweringBlocked) return;
-
-            const q = questionsDB[currentIndex];
-            const feedback = document.getElementById('feedback-box');
-
-            if (selectedIndex === q.correct) {
-                isAnsweringBlocked = true;
-
-                const rect = btnElement.getBoundingClientRect();
-                triggerTargetedLightningStrike(rect.left + rect.width / 2, rect.top + rect.height / 2);
-                playLightningSound();
-                spawnStarBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
-
-                if (!completedLevels.has(currentIndex)) completedLevels.add(currentIndex);
-                if (currentIndex + 1 > maxUnlockedLevel && currentIndex + 1 < 40) maxUnlockedLevel = currentIndex + 1;
-
-                saveProgress();
-                updateHUDScore();
-
-                btnElement.className = "w-full text-left p-3 sm:p-4 rounded-xl font-bold text-black bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-500 border-2 border-yellow-200 shadow-lg flex items-center justify-between text-xs sm:text-sm";
-
-                feedback.innerHTML = `
-                    <div class="flex flex-col items-center gap-1.5 text-yellow-200">
-                        <div class="font-black text-xs sm:text-sm uppercase tracking-wider text-yellow-300">¡CORRECTO! +1 ESTRELLA GANADA ⭐</div>
-                        <div class="text-[11px] sm:text-xs font-bold text-amber-300 italic border-t border-amber-500/30 pt-1.5 w-full"><i class="fa-solid fa-book-bible text-amber-400 mr-1"></i> ${q.verse}</div>
-                        <p class="text-[10px] sm:text-[11px] text-stone-200 font-medium italic leading-relaxed">"${q.verseText}"</p>
-                    </div>
-                `;
-                feedback.className = "block rounded-xl p-3 sm:p-4 text-center bg-amber-950/95 border-2 border-amber-500/80 shadow-2xl backdrop-blur-md mb-3";
-
-                speakText(`¡Correcto! Como dice en ${q.verse}: ${q.verseText}`, () => {
-                    setTimeout(() => {
-                        if (completedLevels.size === 40) {
-                            showTrophyModal();
-                        } else {
-                            if (currentIndex < 39) currentIndex++;
-                            renderLevelGrid();
-                            renderQuestion();
-                        }
-                    }, 1200);
-                });
-
-            } else {
-                playErrorSound();
-                btnElement.className = "w-full text-left p-3 sm:p-4 rounded-xl font-semibold text-red-200 bg-red-950/70 border-2 border-red-500/80 flex items-center justify-between text-xs sm:text-sm";
-                btnElement.disabled = true;
-
-                feedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> Incorrecto. Intenta con otra opción.`;
-                feedback.className = "block rounded-xl p-2.5 sm:p-3 text-center font-bold text-xs sm:text-sm bg-red-950/80 border border-red-500/60 text-red-200 backdrop-blur-md mb-2";
-
-                speakText("Incorrecto. Intenta con otra opción.");
+        function confirmReset() {
+            if (confirm("¿Deseas reiniciar todo tu progreso y volver al Nivel 1 con 0 ovejas rescadadas?")) {
+                resetAndPlayAgain();
             }
         }
 
-        function showTrophyModal() {
-            document.getElementById('trophy-modal').classList.remove('hidden');
-            speakText("¡Felicidades! Has completado victoriosamente los 40 niveles de la Biblia.");
+        function resetAndPlayAgain() {
+            try {
+                localStorage.removeItem('exploradores_40_max');
+                localStorage.removeItem('exploradores_40_completed');
+                localStorage.removeItem('exploradores_40_sheep');
+            } catch(e) {}
+            completedLevels.clear();
+            maxUnlockedLevel = 0;
+            currentLevel = 0;
+            totalRescuedSheepCount = 0;
+            updateHUD();
+            document.getElementById('trophy-modal').classList.add('hidden');
+            document.getElementById('bible-modal').classList.add('hidden');
+            renderLevelsList();
+            renderRescuedFold();
+            loadLevel();
         }
 
-        // CANVASES Y EFECTOS VISUALES (RAYOS Y ESTRELLAS)
-        const sinaiCanvas = document.getElementById('sinai-canvas');
-        const sCtx = sinaiCanvas ? sinaiCanvas.getContext('2d') : null;
-        const strikeCanvas = document.getElementById('strike-lightning-canvas');
-        const stCtx = strikeCanvas ? strikeCanvas.getContext('2d') : null;
-        const particleCanvas = document.getElementById('particle-canvas');
-        const pCtx = particleCanvas ? particleCanvas.getContext('2d') : null;
-
-        let particles = [];
-        let lightningBolts = [];
-
-        function resizeCanvases() {
-            if (sinaiCanvas) { sinaiCanvas.width = window.innerWidth; sinaiCanvas.height = window.innerHeight; }
-            if (strikeCanvas) { strikeCanvas.width = window.innerWidth; strikeCanvas.height = window.innerHeight; }
-            if (particleCanvas) { particleCanvas.width = window.innerWidth; particleCanvas.height = window.innerHeight; }
-            drawSinaiBackground();
-        }
-
-        function drawSinaiBackground() {
-            if (!sCtx || !sinaiCanvas) return;
-            const w = sinaiCanvas.width, h = sinaiCanvas.height;
-            sCtx.clearRect(0, 0, w, h);
-            const skyGrad = sCtx.createLinearGradient(0, 0, 0, h);
-            skyGrad.addColorStop(0, '#040207');
-            skyGrad.addColorStop(1, '#050204');
-            sCtx.fillStyle = skyGrad;
-            sCtx.fillRect(0, 0, w, h);
-        }
+        const celebrationCanvas = document.getElementById('celebration-canvas');
+        const cCtx = celebrationCanvas ? celebrationCanvas.getContext('2d') : null;
+        let celebrationItems = [];
+        let lightningStrike = null;
 
         function triggerTargetedLightningStrike(targetX, targetY) {
             document.body.classList.add('flash-screen');
-            setTimeout(() => document.body.classList.remove('flash-screen'), 300);
+            setTimeout(() => document.body.classList.remove('flash-screen'), 250);
 
-            if (!stCtx) return;
-            let points = [];
-            let currX = targetX + (Math.random() - 0.5) * 60;
-            let currY = 0;
-            points.push({x: currX, y: currY});
-
-            while (currY < targetY) {
-                currY += 20 + Math.random() * 30;
-                currX += (Math.random() - 0.5) * 40;
-                if (currY > targetY) currY = targetY;
-                points.push({x: currX, y: currY});
-            }
-
-            lightningBolts.push({ points: points, alpha: 1.0 });
+            lightningStrike = {
+                startX: window.innerWidth * 0.5,
+                startY: 0,
+                targetX: targetX,
+                targetY: targetY,
+                alpha: 1.0
+            };
         }
 
-        function spawnStarBurst(x, y) {
-            for (let i = 0; i < 25; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const speed = 2 + Math.random() * 8;
-                particles.push({
+        function spawnCelebrationBurst(x, y) {
+            const colors = ['#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#eab308'];
+
+            for (let i = 0; i < 40; i++) {
+                celebrationItems.push({
+                    type: Math.random() > 0.4 ? 'confetti' : 'ribbon',
                     x: x, y: y,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed,
-                    size: 8 + Math.random() * 10,
+                    vx: (Math.random() - 0.5) * 12,
+                    vy: -Math.random() * 10 - 2,
+                    size: 6 + Math.random() * 8,
+                    color: colors[Math.floor(Math.random() * colors.length)],
                     rotation: Math.random() * Math.PI,
-                    rotSpeed: (Math.random() - 0.5) * 0.3,
-                    alpha: 1.0,
-                    color: Math.random() > 0.3 ? '#facc15' : '#ffffff'
+                    rotSpeed: (Math.random() - 0.5) * 0.2,
+                    alpha: 1.0
+                });
+            }
+
+            for (let i = 0; i < 10; i++) {
+                celebrationItems.push({
+                    type: 'balloon',
+                    x: x + (Math.random() - 0.5) * 80,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: -Math.random() * 3 - 2,
+                    size: 18 + Math.random() * 12,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1.0
                 });
             }
         }
 
-        function renderVisualEffects() {
-            if (stCtx && strikeCanvas) {
-                stCtx.clearRect(0, 0, strikeCanvas.width, strikeCanvas.height);
-                for (let i = lightningBolts.length - 1; i >= 0; i--) {
-                    let bolt = lightningBolts[i];
-                    if (bolt.alpha <= 0) { lightningBolts.splice(i, 1); continue; }
+        function renderCelebrations() {
+            if (!cCtx) return;
+            cCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
-                    stCtx.save();
-                    stCtx.beginPath();
-                    stCtx.moveTo(bolt.points[0].x, bolt.points[0].y);
-                    for (let p = 1; p < bolt.points.length; p++) {
-                        stCtx.lineTo(bolt.points[p].x, bolt.points[p].y);
-                    }
-                    stCtx.strokeStyle = `rgba(254, 240, 138, ${bolt.alpha})`;
-                    stCtx.lineWidth = 5;
-                    stCtx.shadowColor = '#eab308';
-                    stCtx.shadowBlur = 25;
-                    stCtx.stroke();
-                    stCtx.restore();
-
-                    bolt.alpha -= 0.08;
-                }
+            if (lightningStrike && lightningStrike.alpha > 0) {
+                cCtx.save();
+                cCtx.beginPath();
+                cCtx.moveTo(lightningStrike.startX, lightningStrike.startY);
+                cCtx.lineTo(lightningStrike.targetX, lightningStrike.targetY);
+                cCtx.strokeStyle = `rgba(255, 230, 100, ${lightningStrike.alpha})`;
+                cCtx.lineWidth = 6;
+                cCtx.shadowColor = 'rgba(239, 68, 68, 0.9)';
+                cCtx.shadowBlur = 20;
+                cCtx.stroke();
+                cCtx.restore();
+                lightningStrike.alpha -= 0.08;
             }
 
-            if (pCtx && particleCanvas) {
-                pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-                for (let i = particles.length - 1; i >= 0; i--) {
-                    let p = particles[i];
-                    if (p.alpha <= 0) { particles.splice(i, 1); continue; }
+            for (let i = celebrationItems.length - 1; i >= 0; i--) {
+                const item = celebrationItems[i];
+                if (item.alpha <= 0) { celebrationItems.splice(i, 1); continue; }
 
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.2;
-                    p.rotation += p.rotSpeed;
-                    p.alpha -= 0.02;
+                item.x += item.vx;
+                item.y += item.vy;
 
-                    pCtx.save();
-                    pCtx.translate(p.x, p.y);
-                    pCtx.rotate(p.rotation);
-                    pCtx.fillStyle = p.color;
-                    pCtx.globalAlpha = p.alpha;
-                    pCtx.shadowColor = '#f59e0b';
-                    pCtx.shadowBlur = 10;
-
-                    pCtx.beginPath();
-                    for (let s = 0; s < 5; s++) {
-                        pCtx.lineTo(Math.cos((s * 4 * Math.PI) / 5) * p.size, Math.sin((s * 4 * Math.PI) / 5) * p.size);
-                        pCtx.lineTo(Math.cos(((s * 4 + 2) * Math.PI) / 5) * (p.size / 2), Math.sin(((s * 4 + 2) * Math.PI) / 5) * (p.size / 2));
-                    }
-                    pCtx.closePath();
-                    pCtx.fill();
-                    pCtx.restore();
+                if (item.type !== 'balloon') {
+                    item.vy += 0.2;
+                    item.rotation += item.rotSpeed;
+                } else {
+                    item.vx += Math.sin(item.y * 0.05) * 0.1;
                 }
+
+                item.alpha -= 0.015;
+
+                cCtx.save();
+                cCtx.translate(item.x, item.y);
+                cCtx.fillStyle = item.color;
+                cCtx.globalAlpha = item.alpha;
+
+                if (item.type === 'confetti') {
+                    cCtx.rotate(item.rotation);
+                    cCtx.fillRect(-item.size / 2, -item.size / 2, item.size, item.size);
+                } else if (item.type === 'ribbon') {
+                    cCtx.rotate(item.rotation);
+                    cCtx.fillRect(-item.size / 4, -item.size, item.size / 2, item.size * 2);
+                } else if (item.type === 'balloon') {
+                    cCtx.beginPath();
+                    cCtx.ellipse(0, 0, item.size * 0.7, item.size, 0, 0, Math.PI * 2);
+                    cCtx.fill();
+                    cCtx.beginPath();
+                    cCtx.moveTo(0, item.size);
+                    cCtx.lineTo(0, item.size + 12);
+                    cCtx.strokeStyle = '#ffffff';
+                    cCtx.stroke();
+                }
+
+                cCtx.restore();
             }
 
-            requestAnimationFrame(renderVisualEffects);
+            requestAnimationFrame(renderCelebrations);
         }
 
         window.onload = function() {
-            resizeCanvases();
-            renderVisualEffects();
+            if (celebrationCanvas) {
+                celebrationCanvas.width = window.innerWidth;
+                celebrationCanvas.height = window.innerHeight;
+            }
+            renderCelebrations();
         };
-        window.onresize = resizeCanvases;
     </script>
 </body>
 </html>
